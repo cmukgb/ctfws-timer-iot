@@ -18,16 +18,25 @@ of parsing.
 Centrally-set topics:
 
 * ``ctfws/game/config`` the string ``none`` or a whitespace-separated text field:
+
   * ``starttime`` -- NTP seconds indicating start state
+
   * ``setupduration`` -- setup duration, in seconds
+
   * ``rounds`` -- number of rounds
+
   * ``roundduration`` -- seconds per round
+
   * ``nflags`` -- number of flags per team
+
   * any additional fields are to be ignored.
 
 * ``ctfws/game/flags`` -- whitespace-separated text field:
+
   * ``red`` -- red team flag capture count (int)
+ 
   * ``yel`` -- yellow team flag capture count (int)
+
   * any additional fields are to be ignored.
 
 * ``ctfws/game/endtime`` -- a single number, denoting NTP seconds of a
@@ -57,6 +66,7 @@ guest account for a hypothetical CtFwS app.
 Device-set topics:
 
 * ``ctfws/dev/$DEVICENAME/beat``
+
   * one of ``alive``, ``beat``, or ``dead`` (LWT; no further fields)
   * ``time`` (UNIX time, from local clock)
   * ``ap`` (MAC addr)
@@ -93,20 +103,20 @@ To send MQTT messages, try variants of these.  Note that in all cases, we
 set messages persistent so that devices that (re)connect mid-way into a game
 get the latest messages automatically.
 
-  * To start a game::
+* To start a game::
 
     mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/flags -r -m '0 0'
     mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/config -r -m `date +%s`' 900 3 900 10'
 
-  * To post information::
+* To post information::
 
     mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/flags -r -m '1 2'
     mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/message -r -m 'Red team captured a flag!'
 
-  * To end a game::
+* To end a game::
 
     mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/endtime -r -m `date +%s` 
-
+ 
 Jail Glyph Timers
 #################
 
@@ -135,6 +145,34 @@ AP they're associated with.
 
 The device should otherwise function more or less as a glorified stopwatch
 under centralized control.
+
+NodeMCU modules used
+====================
+
+Please ensure that your build of NodeMCU supports the following modules:
+
+* ``bit`` (for LCD)
+* ``cjson``
+* ``cron``
+* ``file``
+* ``i2c`` (for LCD)
+* ``mqtt``
+* ``net``
+* ``node``
+* ``rtctime``
+* ``sntp``
+* ``tmr``
+* ``wifi``
+
+Additionally,
+
+* ``mDNS`` may be a good idea, too, if you want to talk to your device over,
+  e.g. telnet, and want it to have a somewhat friendly name.
+
+* ``rtcmem`` may be useful if you wish to stash a little bit of state
+  frequently and don't want to write to flash.
+
+* ``uart`` is in most default builds but is not necessary, if you need space.
 
 BOM
 ===
@@ -165,7 +203,7 @@ Setup time display::
     0         1         
     01234567890123456789
     SETUP    :   MM:SS.s
-    NN⚑: R=0 Y=0
+       NN⚑: R=0 Y=0
     messagemessagemessag
     START IN :   MM:SS.s
 
@@ -174,7 +212,7 @@ Steady state display::
     0         1         
     01234567890123456789
     ROUND r/R :  MM:SS.s
-    NN⚑: R=NN Y=NN
+       NN⚑: R=NN Y=NN
     messagemessagemessag
     JAILBREAK :  MM:SS.s
 

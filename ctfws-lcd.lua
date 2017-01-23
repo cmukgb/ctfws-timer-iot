@@ -68,18 +68,34 @@ local function drawSteadyBotLine(self,rix,maxt,rem)
   drawDS(lcd,3,13,maxt,self.dl_remain ,rem); self.dl_remain  = rem
 end
 
+local function attention(self)
+  if self.attnState then return end
+
+  local tq = self.tq
+  local lcd = self.lcd
+
+  local function doBlink()
+    if self.attnState <= 0 then self.attnState = nil ; return end
+    self.attnState = self.attnState - 1
+    lcd:light(false)
+    tq:queue(250, function() lcd:light(true); tq:queue(500, doBlink) end)
+  end
+
+  self.attnState = 2
+  tq:queue(250, doBlink)
+end
+
 -- returns true if timers should keep going or false if we should wait for
 -- the next message or event
 local function drawTimes(self)
   local ctfws = self.ctfws
   local rix, maxt, ela = ctfws:times(rtctime.get)
   if rix == nil then
-    -- XXX beep to get attention
     drawNoGame(self.lcd, maxt)
     return false
   end
   if rix ~= self.dl_round then
-    if self.dl_round ~= nil then end -- XXX beep when not forcibly reset
+    if self.dl_round ~= nil then attention(self) end -- XXX beep when not forcibly reset
     self.dl_round = rix
     self.dl_elapsed = nil -- force redraws of times on round boundaries
     self.dl_remain  = nil
@@ -92,7 +108,9 @@ end
 local function drawFlags(self)
   local lcd = self.lcd
   local ctfws = self.ctfws
-  lcd:put(lcd:locate(1,0),"                    ")
+  if ctfws.flagsN then -- try not to blank a flagsmessage unless we have reason
+    lcd:put(lcd:locate(1,0),"                    ")
+  end
   if ctfws.startT then
     local str = string.format("%d\000: R=%d Y=%d",
                                ctfws.flagsN, ctfws.flagsR, ctfws.flagsY)
@@ -144,10 +162,12 @@ return function(ctfws, lcd, tq, t)
   self.tq = tq
   self.mtmr = t
 
-  self.reset = reset
-  self.drawTimes   = drawTimes
-  self.drawFlags   = drawFlags
-  self.drawMessage = drawMessage
+  self.attnState       = nil
+
+  self.reset            = reset
+  self.drawTimes        = drawTimes
+  self.drawFlags        = drawFlags
+  self.drawMessage      = drawMessage
   self.drawFlagsMessage = drawFlagsMessage
 
   -- load custom flag glyph
