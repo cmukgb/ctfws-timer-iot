@@ -31,7 +31,7 @@ Centrally-set topics:
 
   * any additional fields are to be ignored.
 
-* ``ctfws/game/flags`` -- whitespace-separated text field:
+* ``ctfws/game/flags`` -- the string ``?`` or a whitespace-separated text field:
 
   * ``red`` -- red team flag capture count (int)
  
@@ -95,9 +95,13 @@ For example::
 Example Command Line Usage
 ==========================
 
+For the sake of simplicity in the below examples, set::
+
+  M=(-h $MQTT_SERVER -u ctfwsmaster -P $CTFWSMASTER_PASSWD -q 2)
+
 To watch what's going on in the world::
 
-  mosquitto_sub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/\# -v
+  mosquitto_sub "$M[@]" -t ctfws/\# -v
 
 To send MQTT messages, try variants of these.  Note that in all cases, we
 set messages persistent so that devices that (re)connect mid-way into a game
@@ -105,17 +109,22 @@ get the latest messages automatically.
 
 * To start a game::
 
-    mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/flags -r -m '0 0'
-    mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/config -r -m `date +%s`' 900 3 900 10'
+    mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '0 0'
+    mosquitto_pub "$M[@]" -t ctfws/game/config -r -m `date +%s`' 900 3 900 10'
 
 * To post information::
 
-    mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/flags -r -m '1 2'
-    mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/message -r -m 'Red team captured a flag!'
+    mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '1 2'
+    mosquitto_pub "$M[@]" -t ctfws/game/message -r -m 'Red team captured a flag!'
+
+* Note that you can deliberately hide the flag scores, if you like, by
+  publishing ``?`` to the ``/flags`` topic::
+
+    mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '?'
 
 * To end a game::
 
-    mosquitto_pub -h $MQTT_SERVER -u ctfwsmaster -P asdf -q 1 -t ctfws/game/endtime -r -m `date +%s` 
+    mosquitto_pub "$M[@]" -t ctfws/game/endtime -r -m `date +%s` 
  
 Jail Glyph Timers
 #################
@@ -180,19 +189,19 @@ BOM
 One possible instantiation, just as a baseline:
 
 +---+-------------------------------------------------------------+-------+
-| 1 | NodeMCU board (ESP8266+USB serial)                          |  3.00 |
+| 1 | NodeMCU board (ESP8266+USB serial)                          |  4.00 |
 +---+-------------------------------------------------------------+-------+
-| 1 | 2.5Ah USB power stick                                       |  6.00 |
+| 1 | 2.5Ah USB power stick                                       |  5.50 |
 +---+-------------------------------------------------------------+-------+
-| 1 | 4x20 LCD display                                            |  7.00 |
+| 1 | 4x20 LCD display                                            |  4.50 |
 +---+-------------------------------------------------------------+-------+
-| 1 | Buzzer                                                      |  1.00 |
+| 1 | Buzzer                                                      |  0.20 |
 +---+-------------------------------------------------------------+-------+
-| 1 | Small breadboard                                            |  1.00 |
+| 1 | Small breadboard                                            |  0.80 |
 +---+-------------------------------------------------------------+-------+
-|   | Jumper wire                                                 |  1.00 |
+|   | Jumper wire                                                 |  0.50 |
 +---+-------------------------------------------------------------+-------+
-|   | TOTAL                                                       | 19.00 |
+|   | TOTAL                                                       | 15.50 |
 +---+-------------------------------------------------------------+-------+
 
 Character Display

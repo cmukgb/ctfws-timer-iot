@@ -112,10 +112,11 @@ local function drawFlags(self)
     lcd:put(lcd:locate(1,0),"                    ")
   end
   if ctfws.startT then
-    local str = string.format("%d\000: R=%d Y=%d",
-                               ctfws.flagsN, ctfws.flagsR, ctfws.flagsY)
+    local str = string.format("%d\000: R=%s Y=%s",
+                               ctfws.flagsN, tostring(ctfws.flagsR), tostring(ctfws.flagsY))
               :sub(1,20)
     lcd:put(lcd:locate(1,(20-#str)/2), str)
+    attention(self)
   end
 end
 
@@ -129,7 +130,6 @@ end
 local function drawMessage(self, msg)
   local lcd = self.lcd
   local mlen = (msg and #msg) or 0
-  -- XXX chirp to get attention
   self.mtmr:unregister()
   lcd:put(lcd:locate(2,0),"                    ")
   if not msg then return end
@@ -147,6 +147,7 @@ local function drawMessage(self, msg)
      end
      self.mtmr:alarm(300, tmr.ALARM_AUTO, scroller)
   end
+  attention(self)
 end
 
 local function reset(self)
@@ -162,7 +163,7 @@ return function(ctfws, lcd, tq, t)
   self.tq = tq
   self.mtmr = t
 
-  self.attnState       = nil
+  self.attnState        = nil
 
   self.reset            = reset
   self.drawTimes        = drawTimes

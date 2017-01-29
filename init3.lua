@@ -20,7 +20,10 @@ local mqttBootTopic  = string.format("ctfws/dev/%s/beat",mqttUser)
 mqc:lwt(mqttBootTopic,"dead",1,1)
 
 -- This is not, properly speaking, OK, but it's so convenient
+local boot_message_hack = 1
+ctfws_lcd.attnState = 1 -- hackishly suppress attention() call
 ctfws_lcd:drawMessage(string.format("I am: %s", mqttUser))
+ctfws_lcd.attnState = nil
 
 local myBSSID = "00:00:00:00:00:00"
 
@@ -43,12 +46,27 @@ local function ctfws_lcd_draw_all()
     ctfws_lcd:reset()
     ctfws_lcd:drawFlags()
     ctfws_lcd:drawTimes()
+
+    -- clear the message display if it hasn't been already after boot
+    if boot_message_hack then
+      ctfws_lcd:drawMessage("")
+      boot_message_hack = nil
+    end
 end
 
-local function ctfws_start_tmr()
-  ctfws_tmr:alarm(100,tmr.ALARM_AUTO,function()
-    if not ctfws_lcd:drawTimes() then ctfws_tmr:unregister() end
-  end)
+local ctfws_start_tmr
+local function ctfws_tmr_cb()
+  -- draw the display, and if it tells us that the game is not in progress,
+  -- wait a little longer before trying again, but don't unregister (like we
+  -- used to).  This means we'll paint error messages periodically, but
+  -- won't hammer the i2c bus with too many unnecessary updates.  It also
+  -- means that a little NTP drift is OK.
+  if not ctfws_lcd:drawTimes() then
+    ctfws_tmr:alarm(3000,tmr.ALARM_AUTO,ctfws_start_tmr)
+  end
+end
+function ctfws_start_tmr()
+  ctfws_tmr:alarm(100,tmr.ALARM_AUTO,ctfws_tmr_cb)
 end
 
 nwfnet.onmqtt["init"] = function(c,t,m)
@@ -72,13 +90,23 @@ nwfnet.onmqtt["init"] = function(c,t,m)
     ctfws_lcd_draw_all()
     ctfws_start_tmr() -- might have been unset; restart display if so
   elseif t == "ctfws/game/flags" then
-   if not m then ctfws:setFlags(0,0); return end
+   if not m or m == "" then
+     ctfws:setFlags("?","?")
+     ctfws_lcd:drawFlags()
+     return
+   end
    local fr, fy = m:match("^%s*(%d+)%s+(%d+).*$")
    if fr ~= nil then
      ctfws:setFlags(tonumber(fr),tonumber(fy))
      ctfws_lcd:drawFlags()
+     return
+   end
+   if m:match("^%s*%?.*$") then
+     ctfws:setFlags("?","?")
+     ctfws_lcd:drawFlags()
    end
   elseif t:match("^ctfws/game/message") then
+    boot_message_hack = nil
     ctfws_lcd:drawMessage(m)
   end
 end
@@ -94,11 +122,11 @@ nwfnet.onnet["init"] = function(e,c)
     if mqtt_reconn_cronentry then mqtt_reconn_cronentry:unschedule() mqtt_reconn_cronentry = nil end
     if not mqtt_beat_cronentry then mqtt_beat() end
     mqc:publish(mqttBootTopic,"alive",1,1)
-    mqc:subscribe("ctfws/game/config",1)
-    mqc:subscribe("ctfws/game/endtime",1)
-    mqc:subscribe("ctfws/game/flags",1)
-    mqc:subscribe("ctfws/game/message",1)      -- broadcast messages
-    mqc:subscribe("ctfws/game/message/jail",1) -- jail-specific messages
+    mqc:subscribe("ctfws/game/config",2)
+    mqc:subscribe("ctfws/game/endtime",2)
+    mqc:subscribe("ctfws/game/flags",2)
+    mqc:subscribe("ctfws/game/message",2)      -- broadcast messages
+    mqc:subscribe("ctfws/game/message/jail",2) -- jail-specific messages
     ctfws_lcd:drawFlagsMessage("MQTT CONNECTED")
   elseif e == "wstagoip"              then
     if not mqtt_reconn_cronentry then mqtt_reconn() end

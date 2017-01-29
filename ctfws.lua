@@ -3,14 +3,15 @@
 --   setupD  -- deciseconds for setup round
 --   roundD  -- deciseconds per round
 --   rounds* -- number of rounds of game play
---   startT  -- NTP seconds of game start
+--   startT* -- NTP seconds of game start
 --   endT    -- NTP seconds of game end (if set)
 --
 --   flagsN* -- total flags
 --   flagsR* -- flags captured by the red team
 --   flagsY* -- flags captured by the yellow team
 --
--- *'d fields are publicly read
+-- *'d fields are publicly read; startT ~= nil is used as a proxy for "is
+-- game configured"
 
 -- returns round index, this round duration, elapsed time
 -- round index: 0 for setup, 1-N for game play, and nil for game over / no game
