@@ -9,10 +9,20 @@ for k,v in pairs(file.list()) do
   end
 end
 
+-- Grab some configuration parameters we might need,
+-- notably, the LCD address
+ctfwshw = {}
+if file.open("ctfws-misc.conf","r") then
+  local conf = cjson.decode(file.read() or "")
+  if type(conf) == "table"
+   then ctfwshw = conf
+   else print("ctfws-misc.conf malformed")
+  end
+end
 
 -- Hardware initialization
 i2c.setup(0,2,1,i2c.SLOW)  -- init i2c on GPIO4 and GPIO5
-lcd = dofile("lcd1602.lc")(0x27)
+lcd = dofile("lcd1602.lc")(ctfwshw.lcd or 0x27)
 
 tq = (dofile "tq.lc")(tmr.create())
 
