@@ -86,21 +86,18 @@ For example::
 
   # global read permissions
   pattern read ctfws/#
+  pattern write ctfws/dev/%u/#
 
   # master write to all ctfws parameters
   user ctfwsmaster
   pattern write ctfws/game/#
-
-  # Per-device permissions to post to their own sub-trees.
-  user ctfwsdev1
-  pattern write ctfws/dev/%u/#
 
 Example Command Line Usage
 ==========================
 
 For the sake of simplicity in the below examples, set::
 
-  M=(-h $MQTT_SERVER -u ctfwsmaster -P $CTFWSMASTER_PASSWD -q 2)
+  M=(-h $MQTT_SERVER -u ctfwsmaster -P $CTFWSMASTER_PASSWD -q 1)
 
 To watch what's going on in the world::
 
@@ -128,6 +125,12 @@ get the latest messages automatically.
 * To end a game::
 
     mosquitto_pub "$M[@]" -t ctfws/game/endtime -r -m `date +%s` 
+
+.. note::
+
+   Due to a bug in nodemcu (https://github.com/nodemcu/nodemcu-firmware/issues/1773),
+   do not send empty messages or messages with QoS 2; stick to QoS 1 and it
+   appears to work.
  
 Jail Glyph Timers
 #################
