@@ -43,7 +43,10 @@ Centrally-set topics:
   forced game end.  If this is larger than the last ``starttime`` gotten
   in a ``config`` message, then the game is considered over.
 
-* ``ctfws/game/message`` -- Message to be displayed everywhere
+* ``ctfws/game/message`` -- Message to be displayed everywhere.  This, and
+  all other messages have a NTP-seconds timestamp followed by whitespace
+  before the message body.  These permit messages from previous games to
+  be suppressed, should they end up resident on the MQTT broker.
 
 * ``ctfws/game/message/player`` -- Message to be displayed specifically
   to players, if they ever come to have their own devices (e.g. apps)
@@ -112,10 +115,10 @@ get the latest messages automatically.
     mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '0 0'
     mosquitto_pub "$M[@]" -t ctfws/game/config -r -m `date +%s`' 900 3 900 10'
 
-* To post information::
+* To post information (The messages must have date stamps on the front!)::
 
     mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '1 2'
-    mosquitto_pub "$M[@]" -t ctfws/game/message -r -m 'Red team captured a flag!'
+    mosquitto_pub "$M[@]" -t ctfws/game/message -r -m `date +%s`' Red team captured a flag!'
 
 * Note that you can deliberately hide the flag scores, if you like, by
   publishing ``?`` to the ``/flags`` topic::

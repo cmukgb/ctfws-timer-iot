@@ -107,7 +107,19 @@ nwfnet.onmqtt["init"] = function(c,t,m)
    end
   elseif t:match("^ctfws/game/message") then
     boot_message_hack = nil
-    ctfws_lcd:drawMessage(m)
+    local mt, ms = m:match("^%s*(%d+)%s*(.*)$")
+    if mt == nil then -- maybe they forgot a timestamp?
+      lastMsgTime = rtctime.get() - 30 -- subtract some wiggle room
+      ctfws_lcd:drawMessage(m)
+    else
+      mt = tonumber(mt)
+      if (ctfws.startT == nil or ctfws.startT <= mt)
+         and (lastMsgTime == nil or lastMsgTime <= mt)
+       then
+        lastMsgTime = mt
+        ctfws_lcd:drawMessage(ms)
+      end
+    end
   end
 end
 
