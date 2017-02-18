@@ -29,6 +29,12 @@ Centrally-set topics:
 
   * ``nflags`` -- number of flags per team
 
+  * ``gamecounter`` -- (integer) which game in a bunch is this?  Since often
+    several are played in a night, it is likely useful to indicate to clients
+    which game this is.  The value ``0`` may be interpreted as suppressing
+    indication in the client; we ``1``-index games to be friendly to people.
+    ;)
+
   * any additional fields are to be ignored.
 
 * ``ctfws/game/flags`` -- the string ``?`` or a whitespace-separated text field:
@@ -209,6 +215,42 @@ One possible instantiation, just as a baseline:
 +---+-------------------------------------------------------------+-------+
 |   | TOTAL                                                       | 15.50 |
 +---+-------------------------------------------------------------+-------+
+
+NodeMCU Pinout
+==============
+
++------+--------------------------------------+
+| GPIO | Purpose                              |
++------+--------------------------------------+
+|    0 | FLASH (button)                       |
++------+--------------------------------------+
+|    1 | Reserved for Lua console TX via USB  |
++------+--------------------------------------+
+|    2 | Free for good use                    |
++------+--------------------------------------+
+|    3 | Reserved for Lua console RX via USB  |
++------+--------------------------------------+
+|    4 | I2C SDA for LCD-driving I/O expander |
++------+--------------------------------------+
+|    5 | I2C SCL for LCD-driving I/O expander |
++------+--------------------------------------+
+|    9 | Free for good use                    |
++------+--------------------------------------+
+|   10 | Free for good use                    |
++------+--------------------------------------+
+|   12 | free for good use                    |
++------+--------------------------------------+
+|   13 | free for good use                    |
++------+--------------------------------------+
+|   14 | beeper active-low                    |
++------+--------------------------------------+
+|   15 | free for good use                    |
++------+--------------------------------------+
+|   16 | ESP8266 WAKE; free for good use      |
++------+--------------------------------------+
+
+* ADC0 is also free at the moment.
+
 
 Character Display
 =================
