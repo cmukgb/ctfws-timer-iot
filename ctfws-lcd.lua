@@ -68,17 +68,25 @@ local function drawSteadyBotLine(self,rix,maxt,rem)
   drawDS(lcd,3,13,maxt,self.dl_remain ,rem); self.dl_remain  = rem
 end
 
-local function attention(self)
+local function attention(self,long)
   if self.attnState then return end
 
   local tq = self.tq
   local lcd = self.lcd
 
   local function doBlink()
-    if self.attnState <= 0 then self.attnState = nil ; return end
+    if self.attnState <= 0 then
+      self.attnState = nil
+      gpio.write(5,gpio.HIGH) -- silence beeper always
+      return
+    end
     self.attnState = self.attnState - 1
+    -- blink
     lcd:light(false)
     tq:queue(250, function() lcd:light(true); tq:queue(500, doBlink) end)
+    -- chirp or scream
+    gpio.write(5,gpio.LOW)
+    if not long then tq:queue(100, function() gpio.write(5,gpio.HIGH) end) end
   end
 
   self.attnState = 2
@@ -92,10 +100,14 @@ local function drawTimes(self)
   local rix, maxt, ela = ctfws:times(rtctime.get)
   if rix == nil then
     drawNoGame(self.lcd, maxt)
+    if rix ~= self.dl_round then
+      self.dl_round = rix
+      attention(self,true)
+    end
     return false
   end
   if rix ~= self.dl_round then
-    if self.dl_round ~= nil then attention(self) end -- XXX beep when not forcibly reset
+    if self.dl_round ~= nil then attention(self,true) end
     self.dl_round = rix
     self.dl_elapsed = nil -- force redraws of times on round boundaries
     self.dl_remain  = nil
@@ -116,7 +128,7 @@ local function drawFlags(self)
                                ctfws.flagsN, tostring(ctfws.flagsR), tostring(ctfws.flagsY))
               :sub(1,20)
     lcd:put(lcd:locate(1,(20-#str)/2), str)
-    attention(self)
+    attention(self,false)
   end
 end
 
@@ -147,7 +159,7 @@ local function drawMessage(self, msg)
      end
      self.mtmr:alarm(300, tmr.ALARM_AUTO, scroller)
   end
-  attention(self)
+  attention(self,false)
 end
 
 local function reset(self)
