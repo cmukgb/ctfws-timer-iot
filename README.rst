@@ -116,7 +116,7 @@ get the latest messages automatically.
 * To start a game::
 
     mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '0 0'
-    mosquitto_pub "$M[@]" -t ctfws/game/config -r -m `date +%s`' 900 3 900 10'
+    mosquitto_pub "$M[@]" -t ctfws/game/config -r -m `date +%s`' 900 3 900 10 0'
 
 * To post information (The messages must have date stamps on the front!)::
 
