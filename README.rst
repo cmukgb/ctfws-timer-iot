@@ -2,141 +2,23 @@
 Capture The Flag With Stuff Glyph Module
 ########################################
 
+
 This is a hardware device designed to assist the `CMU KGB
 <http://www.cmukgb.org/>`_ game of `Capture The Flag With Stuff
 <http://www.cmukgb.org/activities/ctfws.php>`_.
 
-MQTT
-####
+Protocol
+########
 
-Topic Tree
-==========
-
-All numbers herein are base-10 encoded and devoid of leading zeros for ease
-of parsing.
-
-Centrally-set topics:
-
-* ``ctfws/game/config`` the string ``none`` or a whitespace-separated text field:
-
-  * ``starttime`` -- NTP seconds indicating start state
-
-  * ``setupduration`` -- setup duration, in seconds
-
-  * ``rounds`` -- number of rounds
-
-  * ``roundduration`` -- seconds per round
-
-  * ``nflags`` -- number of flags per team
-
-  * ``gamecounter`` -- (integer) which game in a bunch is this?  Since often
-    several are played in a night, it is likely useful to indicate to clients
-    which game this is.  The value ``0`` may be interpreted as suppressing
-    indication in the client; we ``1``-index games to be friendly to people.
-    ;)
-
-  * any additional fields are to be ignored.
-
-* ``ctfws/game/flags`` -- the string ``?`` or a whitespace-separated text field:
-
-  * ``red`` -- red team flag capture count (int)
- 
-  * ``yel`` -- yellow team flag capture count (int)
-
-  * any additional fields are to be ignored.
-
-* ``ctfws/game/endtime`` -- a single number, denoting NTP seconds of a
-  forced game end.  If this is larger than the last ``starttime`` gotten
-  in a ``config`` message, then the game is considered over.
-
-* ``ctfws/game/message`` -- Message to be displayed everywhere.  This, and
-  all other messages have a NTP-seconds timestamp followed by whitespace
-  before the message body.  These permit messages from previous games to
-  be suppressed, should they end up resident on the MQTT broker.
-
-* ``ctfws/game/message/player`` -- Message to be displayed specifically
-  to players, if they ever come to have their own devices (e.g. apps)
-
-* ``ctfws/game/message/jail`` -- Message to be displayed specifically at
-  jail glyph units.  For the moment, that's all of them, but maybe we
-  want to allow other things in the future.
-
-Messages should be set persistent so that devices that reboot or lose their
-connection will display the right thing upon reconnection.
-
-.. todo:: Flag bitmaps?
-
-   Do we want to publish a bitmap of captured flags or are we happy with
-   counts?
-
-Optionally, we may wish to grant read-only views of the above topics to a
-guest account for a hypothetical CtFwS app.
-
-Device-set topics:
-
-* ``ctfws/dev/$DEVICENAME/beat``
-
-  * one of ``alive``, ``beat``, or ``dead`` (LWT; no further fields)
-  * ``time`` (UNIX time, from local clock)
-  * ``ap`` (MAC addr)
-  * any additional fields are to be ignored.
-
-  The device should publish ``alive`` at gain of MQTT connectivity and
-  having registered a last will and testament to set the message ``dead``.
-  Thereafter, it should periodically publish to ``beat`` messages.
-
-ACL Configuration
-=================
-
-For example::
-
-  # global read permissions
-  pattern read ctfws/#
-  pattern write ctfws/dev/%u/#
-
-  # master write to all ctfws parameters
-  user ctfwsmaster
-  pattern write ctfws/game/#
-
-Example Command Line Usage
-==========================
-
-For the sake of simplicity in the below examples, set::
-
-  M=(-h $MQTT_SERVER -u ctfwsmaster -P $CTFWSMASTER_PASSWD -q 1)
-
-To watch what's going on in the world::
-
-  mosquitto_sub "$M[@]" -t ctfws/\# -v
-
-To send MQTT messages, try variants of these.  Note that in all cases, we
-set messages persistent so that devices that (re)connect mid-way into a game
-get the latest messages automatically.
-
-* To start a game::
-
-    mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '0 0'
-    mosquitto_pub "$M[@]" -t ctfws/game/config -r -m `date +%s`' 900 3 900 10 0'
-
-* To post information (The messages must have date stamps on the front!)::
-
-    mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '1 2'
-    mosquitto_pub "$M[@]" -t ctfws/game/message -r -m `date +%s`' Red team captured a flag!'
-
-* Note that you can deliberately hide the flag scores, if you like, by
-  publishing ``?`` to the ``/flags`` topic::
-
-    mosquitto_pub "$M[@]" -t ctfws/game/flags -r -m '?'
-
-* To end a game::
-
-    mosquitto_pub "$M[@]" -t ctfws/game/endtime -r -m `date +%s` 
+The protocol documentation has been moved to a more central location,
+namely http://www.ietfng.org/nwf/misc/ctfws-iot.rst
 
 .. note::
 
    Due to a bug in nodemcu (https://github.com/nodemcu/nodemcu-firmware/issues/1773),
    do not send empty messages or messages with QoS 2; stick to QoS 1 and it
    appears to work.
+
  
 Jail Glyph Timers
 #################
@@ -306,3 +188,5 @@ Configuration Files
 * ``nwfnet.conf`` has details of how to get connectivity to the network.
 * ``nwfnet.conf2`` sets the SNTP server to use
 * ``nwfmqtt.conf`` sets the MQTT server and credentials
+
+
