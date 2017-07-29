@@ -1,13 +1,6 @@
 -- It's early in boot, so we have plenty of RAM.  Compile
 -- the rest of the firmware from source if it's there.
-local k,v
-for k,v in pairs(file.list()) do
-  local ix, _ = k:find("^.*%.lua$")
-  if ix and k ~= "init.lua" then
-    print("early compile",k)
-    node.compile(k); file.remove(k)
-  end
-end
+dofile("compileall.lc")
 
 -- Grab some configuration parameters we might need,
 -- notably, the LCD address

@@ -5,6 +5,7 @@ set -e -u
 . ./host/pushcommon.sh
 
 pushsrc() {
+  dopushcompile util/compileall.lua
   dopush net/nwfmqtt.lua
   dopush _external/lcd1602.lua
   dopush examples/ctfws/ctfws.lua
