@@ -6,7 +6,7 @@ dofile("compileall.lc")
 -- notably, the LCD address
 local ctfwshw = {}
 if file.open("ctfws-misc.conf","r") then
-  local conf = cjson.decode(file.read() or "")
+  local conf = sjson.decode(file.read() or "")
   if type(conf) == "table"
    then ctfwshw = conf
    else print("ctfws-misc.conf malformed")

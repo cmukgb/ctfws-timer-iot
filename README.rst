@@ -55,7 +55,6 @@ NodeMCU modules used
 Please ensure that your build of NodeMCU supports the following modules:
 
 * ``bit`` (for LCD)
-* ``cjson``
 * ``cron``
 * ``file``
 * ``i2c`` (for LCD)
@@ -63,6 +62,7 @@ Please ensure that your build of NodeMCU supports the following modules:
 * ``net``
 * ``node``
 * ``rtctime``
+* ``sjson``
 * ``sntp``
 * ``tmr``
 * ``wifi``
