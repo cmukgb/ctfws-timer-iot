@@ -6,11 +6,11 @@ set -e -u
 
 pushsrc() {
   dopushcompile util/compileall.lua
-  dopush net/nwfmqtt.lua
-  dopush _external/lcd1602.lua
-  dopush examples/ctfws/ctfws.lua
-  dopush examples/ctfws/ctfws-lcd.lua
-  dopush examples/ctfws/init3.lua
+  dopushlua     net/nwfmqtt.lua
+  dopushlua     _external/lcd1602.lua
+  dopushlua     examples/ctfws/ctfws.lua
+  dopushlua     examples/ctfws/ctfws-lcd.lua
+  dopushlua     examples/ctfws/init3.lua
   dopushcompile examples/ctfws/init2.lua
 }
 
@@ -27,7 +27,7 @@ pushconf() {
     exit 1
   fi
   for f in ${CONFDIR}/*; do
-    dopush "$f"
+    dopushtext "$f"
   done
 }
 
