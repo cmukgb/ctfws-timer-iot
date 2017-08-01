@@ -2,16 +2,16 @@
 
 set -e -u
 
-. ./host/pushcommon.sh
+. ./core/host/pushcommon.sh
 
 pushsrc() {
-  dopushcompile util/compileall.lua
-  dopushlua     net/nwfmqtt.lua
-  dopushlua     _external/lcd1602.lua
-  dopushlua     examples/ctfws/ctfws.lua
-  dopushlua     examples/ctfws/ctfws-lcd.lua
-  dopushlua     examples/ctfws/init3.lua
-  dopushcompile examples/ctfws/init2.lua
+  dopushcompile core/util/compileall.lua
+  dopushlua     core/net/nwfmqtt.lua
+  dopushlua     core/_external/lcd1602.lua
+  dopushlua     ctfws.lua
+  dopushlua     ctfws-lcd.lua
+  dopushlua     init3.lua
+  dopushcompile init2.lua
 }
 
 if [ -n "${2:-}" ]; then
@@ -35,7 +35,7 @@ case "${1:-}" in
   all)
     pushconf
     pushsrc
-    ./host/pushinit.sh
+    ./core/host/pushinit.sh
     ;;
   both)
     pushconf
