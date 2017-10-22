@@ -11,7 +11,7 @@ Protocol
 ########
 
 The protocol documentation has been moved to a more central location,
-namely http://www.ietfng.org/nwf/misc/ctfws-iot.rst
+namely http://www.ietfng.org/nwf/ee/ctfws-iot.html
 
 .. note::
 
