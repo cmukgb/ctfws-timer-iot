@@ -30,10 +30,9 @@ local function drawDS(lcd, row, col, max, last, decisec)
 end
 
 local function drawNoGame(lcd, msg)
-  local k,r; for k,r in pairs({0,3}) do
-    lcd:put(lcd:locate(r,0), "                    ")
-    lcd:put(lcd:locate(r,(20-#msg)/2), msg)
-  end
+  lcd:put(lcd:locate(0,0), " CMUKGB CTFWS TIMER ")
+  lcd:put(lcd:locate(3,0), "                    ")
+  lcd:put(lcd:locate(3,(20-#msg)/2), msg)
 end
 
 local function drawSteadyTopLine(self,rix,maxt,ela)
@@ -45,8 +44,8 @@ local function drawSteadyTopLine(self,rix,maxt,ela)
       lcd:put(lcd:locate(0,0), "SETUP    :")
     else
       if ctfws.rounds >= 10
-       then lcd:put(lcd:locate(0,0), string.format("RND %2d/%2d :",rix,ctfws.rounds))
-       else lcd:put(lcd:locate(0,0), string.format("ROUND %d/%d :",rix,ctfws.rounds))
+       then lcd:put(lcd:locate(0,0), string.format("JB# %2d/%2d :",rix,ctfws.rounds))
+       else lcd:put(lcd:locate(0,0), string.format("JB#   %d/%d :",rix,ctfws.rounds))
       end
     end
   end
