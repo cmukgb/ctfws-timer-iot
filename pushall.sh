@@ -15,7 +15,7 @@ pushsrc() {
 }
 
 if [ -n "${2:-}" ]; then
-  if [ -d examples/ctfws/conf/$2 ]; then CONFDIR=examples/ctfws/conf/$2
+  if [ -d conf/$2 ]; then CONFDIR=conf/$2
   elif [ -d $2 ]; then CONFDIR=$2
   else echo "Not a directory: $2"; exit 1
   fi
