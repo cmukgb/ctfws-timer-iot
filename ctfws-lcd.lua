@@ -71,7 +71,6 @@ end
 local function attention(self,long)
   if self.attnState then return end
 
-  local tq = self.tq
   local lcd = self.lcd
 
   local function doBlink()
@@ -83,14 +82,15 @@ local function attention(self,long)
     self.attnState = self.attnState - 1
     -- blink
     lcd:light(false)
-    tq:queue(250, function() lcd:light(true); tq:queue(500, doBlink) end)
+    tmr.create():alarm(250,tmr.ALARM_SINGLE,
+      function() lcd:light(true) ; (tmr.create()):alarm(500,tmr.ALARM_SINGLE,doBlink) end)
     -- chirp or scream
     gpio.write(5,gpio.LOW)
-    if not long then tq:queue(100, function() gpio.write(5,gpio.HIGH) end) end
+    if not long then tmr.create():alarm(100, tmr.ALARM_SINGLE, function() gpio.write(5,gpio.HIGH) end) end
   end
 
   self.attnState = 2
-  tq:queue(250, doBlink)
+  (tmr.create()):alarm(250, tmr.ALARM_SINGLE, doBlink)
 end
 
 -- returns true if timers should keep going or false if we should wait for
@@ -168,11 +168,10 @@ local function reset(self)
   self.dl_round   = nil
 end
 
-return function(ctfws, lcd, tq, t)
+return function(ctfws, lcd, t)
   self = {}
   self.ctfws = ctfws
   self.lcd = lcd
-  self.tq = tq
   self.mtmr = t
 
   self.attnState        = nil

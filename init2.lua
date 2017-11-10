@@ -19,7 +19,5 @@ gpio.mode(5,gpio.OUTPUT)   -- beeper on GPIO14
 i2c.setup(0,2,1,i2c.SLOW)  -- init i2c on GPIO4 and GPIO5
 lcd = dofile("lcd1602.lc")(ctfwshw.lcd or 0x27)
 
-tq = (dofile "tq.lc")(tmr.create())
-
 -- give the LCD time to initialize properly
-tq:queue(125, function() print("init2 go3") dofile("init3.lc") end)
+tmr.create():alarm(125, tmr.ALARM_SINGLE, function() print("init2 go3") dofile("init3.lc") end)

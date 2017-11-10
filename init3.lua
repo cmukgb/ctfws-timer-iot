@@ -7,7 +7,7 @@ ctfws = dofile("ctfws.lc")()
 ctfws:setFlags(0,0)
 
 msg_tmr = tmr.create()
-ctfws_lcd = dofile("ctfws-lcd.lc")(ctfws, lcd, tq, msg_tmr)
+ctfws_lcd = dofile("ctfws-lcd.lc")(ctfws, lcd, msg_tmr)
 ctfws_tmr = tmr.create()
 
 -- Draw the default display
