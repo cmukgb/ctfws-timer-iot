@@ -113,8 +113,8 @@ nwfnet.onmqtt["init"] = function(c,t,m)
       ctfws_lcd:drawMessage(m)
     else
       mt = tonumber(mt)
-      if (ctfws.startT == nil or ctfws.startT <= mt)
-         and (lastMsgTime == nil or lastMsgTime <= mt)
+      if (ctfws.startT == nil or ctfws.startT <= mt)  -- message for this game
+         and (lastMsgTime == nil or lastMsgTime < mt) -- latest message (strict)
        then
         lastMsgTime = mt
         ctfws_lcd:drawMessage(ms)
