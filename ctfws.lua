@@ -77,12 +77,10 @@ local function setEndTime(self,t)
   self.endT = t
 end
 
-return function() 
-  local self = {}
-  self.times = times
-  self.config = config
-  self.deconfig = deconfig
-  self.setFlags = setFlags
-  self.setEndTime = setEndTime
-  return self
-end
+local self = {}
+self.times = times
+self.config = config
+self.deconfig = deconfig
+self.setFlags = setFlags
+self.setEndTime = setEndTime
+return self

@@ -3,16 +3,16 @@
 dprint = function(...) print(...) end -- ON
 
 -- common module initialization
-cron.schedule("*/5 * * * *", function(e) dofile("nwfnet-sntp.lc").dosntp(nil) end)
+cron.schedule("*/5 * * * *", function(e) OVL["nwfnet-sntp"]().dosntp(nil) end)
 nwfnet = require "nwfnet"
 
 -- Game logic modules
-ctfws = dofile("ctfws.lc")()
+ctfws = OVL.ctfws()
 ctfws:setFlags(0,0)
 
 msg_tmr = tmr.create()
 flg_tmr = tmr.create()
-ctfws_lcd = dofile("ctfws-lcd.lc")(ctfws, lcd, msg_tmr, flg_tmr)
+ctfws_lcd = OVL["ctfws-lcd"]()(ctfws, lcd, msg_tmr, flg_tmr)
 ctfws_tmr = tmr.create()
 
 -- Draw the default display
@@ -20,7 +20,7 @@ ctfws_lcd:drawTimes()
 ctfws_lcd:drawFlagsMessage("BOOT...")
 
 -- MQTT plumbing
-mqc, mqttUser = dofile("nwfmqtt.lc").mkclient("nwfmqtt.conf")
+mqc, mqttUser = OVL.nwfmqtt().mkclient("nwfmqtt.conf")
 local mqttBootTopic  = string.format("ctfws/dev/%s/beat",mqttUser)
 mqc:lwt(mqttBootTopic,"dead",1,1)
 
@@ -36,9 +36,9 @@ local mqtt_reconn_cronentry
 local function mqtt_reconn()
   dprint("Trying reconn...")
   mqtt_reconn_cronentry = cron.schedule("* * * * *", function(e)
-    mqc:close(); dofile("nwfmqtt.lc").connect(mqc,"nwfmqtt.conf")
+    mqc:close(); OVL.nwfmqtt().connect(mqc,"nwfmqtt.conf")
   end)
-  dofile("nwfmqtt.lc").connect(mqc,"nwfmqtt.conf")
+  OVL.nwfmqtt().connect(mqc,"nwfmqtt.conf")
 end
 
 local mqtt_beat_cronentry
@@ -163,5 +163,5 @@ end
 
 -- hook us up to the network!
 ctfws_lcd:drawFlagsMessage("CONNECTING...")
--- dofile("nwfnet-diag.lc")(true)
-dofile("nwfnet-go.lc")
+-- OVL["nwfnet-diag"]()(true)
+OVL["nwfnet-go"]()

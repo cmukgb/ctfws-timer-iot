@@ -5,9 +5,6 @@ set -e -u
 . ./core/host/pushcommon.sh
 
 pushsrc() {
-  dopushcompile core/util/compileall.lua
-  dopushlua     core/net/nwfmqtt.lua
-  dopushlua     core/_external/lcd1602.lua
   dopushlua     ctfws.lua
   dopushlua     ctfws-lcd.lua
   dopushlua     init3.lua
@@ -31,11 +28,20 @@ pushconf() {
   done
 }
 
+pushlfs() {
+    if [ -z ${LUACROSS:-} ]; then
+      ./core/host/pushinit.sh
+    else
+      ./mklfs.sh
+      dopushtext _lfs_build/luac.out
+    fi
+}
+
 case "${1:-}" in
   all)
     pushconf
     pushsrc
-    ./core/host/pushinit.sh
+    pushlfs
     ;;
   both)
     pushconf
@@ -44,11 +50,15 @@ case "${1:-}" in
   src)
     pushsrc
     ;;
+  srcmore)
+    pushsrc
+    pushlfs
+    ;;
   conf)
     pushconf
     ;;
   *)
-    echo "Please specify push mode: {conf,src,both,all}"
+    echo "Please specify push mode: {conf,src,srcmore,both,all}"
     exit 1
     ;;
 esac
