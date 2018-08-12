@@ -29,6 +29,26 @@ local function drawDS(lcd, row, col, max, last, decisec)
   end
 end
 
+-- scroll a message msg across line lix using the timer t
+local function scroller(t, lix, msg)
+  local lcd = self.lcd
+  local mlen = #msg
+  if mlen <= 20
+   then lcd:put(lcd:locate(lix,(20-mlen)/2),msg)
+   else
+     -- inspired by lcd:run(), but corrected
+     local ix = 1
+     local function doscroll()
+       if     ix <= 20   then lcd:put(lcd:locate(lix,20-ix),msg:sub(1,ix))
+       elseif ix >  mlen then lcd:put(lcd:locate(lix,0),msg:sub(ix-19)," ")
+       else                   lcd:put(lcd:locate(lix,0),msg:sub(ix-19,ix))
+       end
+       if ix >= mlen + 20 then ix = 1 else ix = ix + 1 end
+     end
+     t:alarm(300, tmr.ALARM_AUTO, doscroll)
+  end
+end
+
 local function drawNoGame(lcd, msg)
   lcd:put(lcd:locate(0,0), " CMUKGB CTFWS TIMER ")
   lcd:put(lcd:locate(3,0), "                    ")
@@ -40,13 +60,10 @@ local function drawSteadyTopLine(self,rix,maxt,ela)
   local ctfws = self.ctfws
   if self.dl_elapsed == nil then
     lcd:put(lcd:locate(0,0), "                    ")
-    if rix == 0 then
-      lcd:put(lcd:locate(0,0), "SETUP    :")
-    else
-      if ctfws.rounds >= 10
-       then lcd:put(lcd:locate(0,0), string.format("JB# %2d/%2d :",rix,ctfws.rounds))
-       else lcd:put(lcd:locate(0,0), string.format("JB#   %d/%d :",rix,ctfws.rounds))
-      end
+    if     rix == 0            then lcd:put(lcd:locate(0,0), "SETUP     :")
+    elseif rix == ctfws.rounds then lcd:put(lcd:locate(0,0), "GAME      :")
+    elseif ctfws.rounds >= 11  then lcd:put(lcd:locate(0,0), string.format("JB# %2d/%2d :",rix,ctfws.rounds-1))
+    else                            lcd:put(lcd:locate(0,0), string.format("JB#   %d/%d :",rix,ctfws.rounds-1))
     end
   end
   drawDS(lcd,0,13,maxt,self.dl_elapsed,ela); self.dl_elapsed = ela
@@ -57,7 +74,7 @@ local function drawSteadyBotLine(self,rix,maxt,rem)
   if self.dl_remain == nil then
     lcd:put(lcd:locate(3,0), "                    ")
     if rix == 0 then
-      lcd:put(lcd:locate(3,0), "START IN :")
+      lcd:put(lcd:locate(3,0), "START IN  :")
     elseif rix < ctfws.rounds then
       lcd:put(lcd:locate(3,0), "JAILBREAK :")
     else
@@ -117,17 +134,14 @@ local function drawTimes(self)
 end
 
 local function drawFlags(self)
-  local lcd = self.lcd
-  local ctfws = self.ctfws
   if ctfws.flagsN then -- try not to blank a flagsmessage unless we have reason
+    self.ftmr:unregister()
     lcd:put(lcd:locate(1,0),"                    ")
   end
-  if ctfws.startT then
-    local str = string.format("%d\000: R=%s Y=%s",
-                               ctfws.flagsN, tostring(ctfws.flagsR), tostring(ctfws.flagsY))
-              :sub(1,20)
-    lcd:put(lcd:locate(1,(20-#str)/2), str)
-    attention(self,false)
+  if ctfws.startT
+   then scroller(self.ftmr, 1, string.format("%d\000: R=%s Y=%s",
+                               ctfws.flagsN, tostring(ctfws.flagsR), tostring(ctfws.flagsY)))
+        attention(self,false)
   end
 end
 
@@ -139,25 +153,13 @@ local function drawFlagsMessage(self, msg)
 end
 
 local function drawMessage(self, msg)
-  local lcd = self.lcd
-  local mlen = (msg and #msg) or 0
+  -- blank and stop scrolling
   self.mtmr:unregister()
   lcd:put(lcd:locate(2,0),"                    ")
+
   if not msg then return end
-  if mlen <= 20
-   then lcd:put(lcd:locate(2,(20-#msg)/2),msg)
-   else
-     -- inspired by lcd:run(), but corrected
-     local ix = 1
-     local function scroller()
-       if     ix <= 20   then lcd:put(lcd:locate(2,20-ix),msg:sub(1,ix))
-       elseif ix >  mlen then lcd:put(lcd:locate(2,0),msg:sub(ix-19)," ")
-       else                   lcd:put(lcd:locate(2,0),msg:sub(ix-19,ix))
-       end
-       if ix >= mlen + 20 then ix = 1 else ix = ix + 1 end
-     end
-     self.mtmr:alarm(300, tmr.ALARM_AUTO, scroller)
-  end
+
+  scroller(self.mtmr, 2, msg)
   attention(self,false)
 end
 
@@ -167,11 +169,12 @@ local function reset(self)
   self.dl_round   = nil
 end
 
-return function(ctfws, lcd, t)
+return function(ctfws, lcd, mt, ft)
   self = {}
   self.ctfws = ctfws
   self.lcd = lcd
-  self.mtmr = t
+  self.mtmr = mt
+  self.ftmr = ft
 
   self.attnState        = nil
 

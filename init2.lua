@@ -15,6 +15,7 @@ end
 
 -- Hardware initialization
 print("init2 hw")
+wifi.sta.sleeptype(wifi.NONE_SLEEP) -- don't power down radio
 gpio.mode(5,gpio.OUTPUT)   -- beeper on GPIO14
 i2c.setup(0,2,1,i2c.SLOW)  -- init i2c on GPIO4 and GPIO5
 lcd = dofile("lcd1602.lc")(ctfwshw.lcd or 0x27)

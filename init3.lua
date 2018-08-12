@@ -1,3 +1,7 @@
+-- logging for debugging
+-- dprint = function(...) end -- OFF
+dprint = function(...) print(...) end -- ON
+
 -- common module initialization
 cron.schedule("*/5 * * * *", function(e) dofile("nwfnet-sntp.lc").dosntp(nil) end)
 nwfnet = require "nwfnet"
@@ -7,7 +11,8 @@ ctfws = dofile("ctfws.lc")()
 ctfws:setFlags(0,0)
 
 msg_tmr = tmr.create()
-ctfws_lcd = dofile("ctfws-lcd.lc")(ctfws, lcd, msg_tmr)
+flg_tmr = tmr.create()
+ctfws_lcd = dofile("ctfws-lcd.lc")(ctfws, lcd, msg_tmr, flg_tmr)
 ctfws_tmr = tmr.create()
 
 -- Draw the default display
@@ -29,6 +34,7 @@ local myBSSID = "00:00:00:00:00:00"
 
 local mqtt_reconn_cronentry
 local function mqtt_reconn()
+  dprint("Trying reconn...")
   mqtt_reconn_cronentry = cron.schedule("* * * * *", function(e)
     mqc:close(); dofile("nwfmqtt.lc").connect(mqc,"nwfmqtt.conf")
   end)
@@ -37,7 +43,7 @@ end
 
 local mqtt_beat_cronentry
 local function mqtt_beat()
-  mqtt_beat_cronentry = cron.schedule("*/5 * * * *", function(e) 
+  mqtt_beat_cronentry = cron.schedule("* * * * *", function(e)
     mqc:publish(mqttBootTopic,string.format("beat %d %s",rtctime.get(),myBSSID),1,1)
   end)
 end
@@ -70,6 +76,7 @@ function ctfws_start_tmr()
 end
 
 nwfnet.onmqtt["init"] = function(c,t,m)
+  dprint("MQTT", t, m)
   if t == "ctfws/game/config" then
     ctfws_tmr:unregister()
     if not m or m == "none"
@@ -91,19 +98,16 @@ nwfnet.onmqtt["init"] = function(c,t,m)
     ctfws_start_tmr() -- might have been unset; restart display if so
   elseif t == "ctfws/game/flags" then
    if not m or m == "" then
-     ctfws:setFlags("?","?")
-     ctfws_lcd:drawFlags()
+     if ctfws:setFlags("?","?") then ctfws_lcd:drawFlags() end
      return
    end
    local fr, fy = m:match("^%s*(%d+)%s+(%d+).*$")
    if fr ~= nil then
-     ctfws:setFlags(tonumber(fr),tonumber(fy))
-     ctfws_lcd:drawFlags()
+     if ctfws:setFlags(tonumber(fr),tonumber(fy)) then ctfws_lcd:drawFlags() end
      return
    end
    if m:match("^%s*%?.*$") then
-     ctfws:setFlags("?","?")
-     ctfws_lcd:drawFlags()
+     if ctfws:setFlags("?","?") then ctfws_lcd:drawFlags() end
    end
   elseif t:match("^ctfws/game/message") then
     boot_message_hack = nil
@@ -126,6 +130,7 @@ end
 -- network callbacks
 
 nwfnet.onnet["init"] = function(e,c)
+  dprint("NET", e)
   if     e == "mqttdscn" and c == mqc then
     if mqtt_beat_cronentry then mqtt_beat_cronentry:unschedule() mqtt_beat_cronentry = nil end
     if not mqtt_reconn_cronentry then mqtt_reconn() end
@@ -134,11 +139,13 @@ nwfnet.onnet["init"] = function(e,c)
     if mqtt_reconn_cronentry then mqtt_reconn_cronentry:unschedule() mqtt_reconn_cronentry = nil end
     if not mqtt_beat_cronentry then mqtt_beat() end
     mqc:publish(mqttBootTopic,"alive",1,1)
-    mqc:subscribe("ctfws/game/config",2)
-    mqc:subscribe("ctfws/game/endtime",2)
-    mqc:subscribe("ctfws/game/flags",2)
-    mqc:subscribe("ctfws/game/message",2)      -- broadcast messages
-    mqc:subscribe("ctfws/game/message/jail",2) -- jail-specific messages
+    mqc:subscribe({
+      ["ctfws/game/config"] = 2,
+      ["ctfws/game/endtime"] = 2,
+      ["ctfws/game/flags"] = 2,
+      ["ctfws/game/message"] = 2,      -- broadcast messages
+      ["ctfws/game/message/jail"] = 2, -- jail-specific messages
+    })
     ctfws_lcd:drawFlagsMessage("MQTT CONNECTED")
   elseif e == "wstagoip"              then
     if not mqtt_reconn_cronentry then mqtt_reconn() end

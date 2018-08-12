@@ -2,7 +2,6 @@
 Capture The Flag With Stuff Glyph Module
 ########################################
 
-
 This is a hardware device designed to assist the `CMU KGB
 <http://www.cmukgb.org/>`_ game of `Capture The Flag With Stuff
 <http://www.cmukgb.org/activities/ctfws.php>`_.
@@ -98,6 +97,10 @@ One possible instantiation, just as a baseline:
 |   | TOTAL                                                       | 15.50 |
 +---+-------------------------------------------------------------+-------+
 
+We have found it necessary, on occasion, to add a 100-ohm resistor between
+power and ground to keep the USB power sticks from automagically turning
+off due to low draw.  It's not great, but it works.
+
 NodeMCU Pinout
 ==============
 
@@ -150,7 +153,7 @@ Steady state display::
 
     0         1         
     01234567890123456789
-    ROUND r/R :  MM:SS.s
+    JB#   n/N :  MM:SS.s
        NN⚑: R=NN Y=NN
     messagemessagemessag
     JAILBREAK :  MM:SS.s
@@ -159,7 +162,7 @@ Last round display::
 
     0         1         
     01234567890123456789
-    ROUND r/R :  MM:SS.s
+    GAME      :  MM:SS.s
        NN⚑: R=NN Y=NN
     messagemessagemessag
     GAME END  :  MM:SS.s
@@ -168,16 +171,16 @@ Game over::
 
     0         1         
     01234567890123456789
-         GAME OVER
+     CMUKGB CTFWS TIMER
        NN⚑: R=NN Y=NN
     messagemessagemessag
-         GAME OVER
+     GAME OVER @ MM:SS
 
 Game not configured::
 
     0         1         
     01234567890123456789
-     GAME NOT CONFIGURED
+     CMUKGB CTFWS TIMER
        
     messagemessagemessag
      GAME NOT CONFIGURED

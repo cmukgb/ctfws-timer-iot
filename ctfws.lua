@@ -3,8 +3,8 @@
 --   setupD  -- deciseconds for setup round
 --   roundD  -- deciseconds per round
 --   rounds* -- number of rounds of game play
---   startT* -- NTP seconds of game start
---   endT    -- NTP seconds of game end (if set)
+--   startT* -- POSIX seconds of game start
+--   endT    -- POSIX seconds of game end (if set)
 --
 --   flagsN* -- total flags
 --   flagsR* -- flags captured by the red team
@@ -21,8 +21,10 @@ local function times(self, nowf)
     return nil, "GAME NOT CONFIGURED!"
   end
 
+  -- Game declared over; show total elapsed time
   if self.endT and self.endT >= self.startT then
-    return nil, "GAME OVER"
+    local t = self.endT - self.startT
+    return nil, string.format("GAME OVER @ %02d:%02d", t/60, t%60)
   end
 
   local now_sec, now_usec = nowf()
@@ -62,9 +64,13 @@ local function deconfig(self)
   -- leave flagsN alone for end-of-game display logic
 end
 
+-- return whether or not a change took place, for duplicate message
+-- suppression
 local function setFlags(self, fr, fy)
+  if (self.flagsR == fr) and (self.flagsY == fy) then return false end
   self.flagsR = fr
   self.flagsY = fy
+  return true
 end
 
 local function setEndTime(self,t)
