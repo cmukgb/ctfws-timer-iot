@@ -21,6 +21,9 @@ ctfws_lcd:drawFlagsMessage("BOOT...")
 
 -- MQTT plumbing
 mqc, mqttUser = OVL.nwfmqtt().mkclient("nwfmqtt.conf")
+if mqc == nil then
+  print("You forgot your MQTT configuration file")
+end
 local mqttBootTopic  = string.format("ctfws/dev/%s/beat",mqttUser)
 mqc:lwt(mqttBootTopic,"dead",1,1)
 
