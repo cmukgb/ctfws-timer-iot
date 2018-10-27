@@ -51,7 +51,7 @@ under centralized control.
 NodeMCU modules used
 ====================
 
-Please ensure that your build of NodeMCU supports the following modules:
+Please ensure that your build of NodeMCU supports LFS and the following modules:
 
 * ``bit`` (for LCD)
 * ``cron``
@@ -75,6 +75,8 @@ Additionally,
   frequently and don't want to write to flash.
 
 * ``uart`` is in most default builds but is not necessary, if you need space.
+
+This has only been tested with integer builds.
 
 BOM
 ===
