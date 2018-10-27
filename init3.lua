@@ -101,14 +101,15 @@ nwfnet.onmqtt["init"] = function(c,t,m)
      if ctfws:setFlags("?","?") then ctfws_lcd:drawFlags() end
      return
    end
-   local fr, fy = m:match("^%s*(%d+)%s+(%d+).*$")
-   if fr ~= nil then
+   local ts, fr, fy = m:match("^%s*(%d+)%s+(%d+)%s+(%d+).*$")
+   if ts ~= nil then
      if ctfws:setFlags(tonumber(fr),tonumber(fy)) then ctfws_lcd:drawFlags() end
      return
    end
-   if m:match("^%s*%?.*$") then
-     if ctfws:setFlags("?","?") then ctfws_lcd:drawFlags() end
-   end
+   -- we used to match on the ? explicitly, as in:
+   --   if m:match("^%s*(%d+)%s+%?.*$") then ... end
+   -- but for now, let's just take any ill-formed message
+   if ctfws:setFlags("?","?") then ctfws_lcd:drawFlags() end
   elseif t:match("^ctfws/game/message") then
     boot_message_hack = nil
     local mt, ms = m:match("^%s*(%d+)%s*(.*)$")
