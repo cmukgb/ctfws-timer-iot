@@ -104,7 +104,7 @@ nwfnet.onmqtt["init"] = function(c,t,m)
      if ctfws:setFlags("?","?") then ctfws_lcd:drawFlags() end
      return
    end
-   local ts, fr, fy = m:match("^%s*(%d+)%s+(%d+)%s+(%d+).*$")
+   local ts, fr, fy = m:match("^%s*(%d+)%s+(-?%d+)%s+(-?%d+).*$")
    if ts ~= nil then
      if ctfws:setFlags(tonumber(fr),tonumber(fy)) then ctfws_lcd:drawFlags() end
      return

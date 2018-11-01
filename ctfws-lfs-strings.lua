@@ -37,7 +37,7 @@ local init3load =
   "ctfws/game/message/jail",
   "none",
   "^%s*(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+).*$",
-  "^%s*(%d+)%s+(%d+).*$",
+  "^%s*(%d+)%s+(-?%d+)%s+(-?%d+).*$",
   "^%s*(%d+)%s*(.*)$",
   "^%s*%?.*$",
   "^ctfws/game/message",
