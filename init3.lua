@@ -22,7 +22,7 @@ ctfws_lcd:drawFlagsMessage("BOOT...")
 -- MQTT plumbing
 mqc, mqttUser = OVL.nwfmqtt().mkclient("nwfmqtt.conf")
 if mqc == nil then
-  print("You forgot your MQTT configuration file")
+  print("CTFWS", "You forgot your MQTT configuration file")
 end
 local mqttBootTopic  = string.format("ctfws/dev/%s/beat",mqttUser)
 mqc:lwt(mqttBootTopic,"dead",1,1)
@@ -37,7 +37,7 @@ local myBSSID = "00:00:00:00:00:00"
 
 local mqtt_reconn_cronentry
 local function mqtt_reconn()
-  dprint("Trying reconn...")
+  dprint("CTFWS", "Trying reconn...")
   mqtt_reconn_cronentry = cron.schedule("* * * * *", function(e)
     mqc:close(); OVL.nwfmqtt().connect(mqc,"nwfmqtt.conf")
   end)

@@ -10,7 +10,8 @@ local ctfws = "ctfws", "ctfws_lcd", "ctfws_tmr",
   "GAME NOT CONFIGURED!",
   "GAME OVER @ %02d:%02d",
   "START TIME IN FUTURE",
-  "TIME IS UP"
+  "TIME IS UP",
+  "CTFWS"
 
 local lcdpreload =
   "define_char",
