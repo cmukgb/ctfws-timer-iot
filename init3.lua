@@ -12,7 +12,8 @@ ctfws:setFlags(0,0)
 
 msg_tmr = tmr.create()
 flg_tmr = tmr.create()
-ctfws_lcd = OVL["ctfws-lcd"]()(ctfws, lcd, msg_tmr, flg_tmr)
+fla_tmr = tmr.create()
+ctfws_lcd = OVL["ctfws-lcd"]()(ctfws, lcd, msg_tmr, flg_tmr, fla_tmr)
 ctfws_tmr = tmr.create()
 
 -- Draw the default display

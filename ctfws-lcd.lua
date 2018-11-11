@@ -49,6 +49,21 @@ local function scroller(t, lix, msg)
   end
 end
 
+-- call back `cb` cycling through elements of table `ta` using
+-- timer `tm` every linger `ms`.
+local function alternator(tm, linger, ta, cb)
+  local lcd = self.lcd
+  local n = #ta
+  local ix = 1
+  local function donext()
+    cb(ta[ix])
+    ix = ix + 1
+    if ix > n then ix = 1 end
+  end
+  donext()
+  tm:alarm(linger, tmr.ALARM_AUTO, donext)
+end
+
 local function drawNoGame(lcd, msg)
   lcd:put(lcd:locate(0,0), " CMUKGB CTFWS TIMER ")
   lcd:put(lcd:locate(3,0), "                    ")
@@ -138,12 +153,34 @@ end
 local function drawFlags(self)
   if ctfws.flagsN then -- try not to blank a flagsmessage unless we have reason
     self.ftmr:unregister()
+    self.fatmr:unregister()
     lcd:put(lcd:locate(1,0),"                    ")
   end
-  if ctfws.startT
-   then scroller(self.ftmr, 1, string.format("%d\000: R=%s Y=%s",
-                               ctfws.flagsN, tostring(ctfws.flagsR), tostring(ctfws.flagsY)))
-        attention(self,false)
+  if ctfws.startT then
+    local oneline = string.format("%d\000: R=%s Y=%s",
+                      ctfws.flagsN,
+                      tostring(ctfws.flagsR), tostring(ctfws.flagsY))
+    if #oneline <= 20 then
+      lcd:put(lcd:locate(1,(20-#oneline)/2),oneline)
+    else
+      local fr = tostring(ctfws.flagsR)
+      local fy = tostring(ctfws.flagsY)
+      local maxl = math.max(#fr, #fy)
+      if maxl + #tostring(ctfws.flagsN) + 5 <= 20 then
+        alternator(self.fatmr, 2000,
+          { string.format("%d\000: R=%s%s", ctfws.flagsN, string.rep(" ", maxl-#fr), fr)
+          , string.format("%d\000: Y=%s%s", ctfws.flagsN, string.rep(" ", maxl-#fy), fy)
+          },
+          function(msg) lcd:put(lcd:locate(1,(20-#msg)/2),msg) end)
+       else
+        -- The judges have clearly gone insane; just scroll the long line.
+        -- We don't scroll within the alternator above because who knows,
+        -- at this point, how long these lines are and maybe they'd
+        -- temporarily render blank.
+        scroller(self.ftmr, 1, oneline)
+      end
+    end
+    attention(self,false)
   end
 end
 
@@ -171,12 +208,13 @@ local function reset(self)
   self.dl_round   = nil
 end
 
-return function(ctfws, lcd, mt, ft)
+return function(ctfws, lcd, mt, ft, fa)
   self = {}
   self.ctfws = ctfws
   self.lcd = lcd
   self.mtmr = mt
   self.ftmr = ft
+  self.fatmr = fa
 
   self.attnState        = nil
 
