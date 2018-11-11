@@ -39,17 +39,17 @@ local function times(self, nowf)
   local elapsed = (now_sec - self.startT) * 10 + math.floor(now_usec / 100000)
 
   if elapsed < self.setupD then
-    return 0, self.setupD, elapsed
+    return 0, self.setupD, elapsed, elapsed -- treat setup (round 0) as a self-contained "game"
   end
 
-  elapsed = elapsed - self.setupD
+  gameElapsed = elapsed - self.setupD
 
-  local rounds = math.floor(elapsed / self.roundD)
+  local rounds = math.floor(gameElapsed / self.roundD)
   if rounds >= self.rounds
    then return nil, "TIME IS UP"
    else -- game still in progress
-     local roundElapsed = elapsed - rounds * self.roundD
-     return rounds + 1, self.roundD, roundElapsed
+     local roundElapsed = gameElapsed - rounds * self.roundD
+     return rounds + 1, self.roundD, roundElapsed, gameElapsed
   end
 end
 

@@ -155,10 +155,10 @@ Steady state display::
 
     0         1         
     01234567890123456789
-    JB#   n/N :  MM:SS.s
+    GAME      :  MM:SS.s
        NN⚑: R=NN Y=NN
     messagemessagemessag
-    JAILBREAK :  MM:SS.s
+    JB#   n/N :  MM:SS.s
 
 Last round display::
 
