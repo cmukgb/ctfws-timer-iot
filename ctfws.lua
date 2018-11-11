@@ -42,7 +42,7 @@ local function times(self, nowf)
     return 0, self.setupD, elapsed, elapsed -- treat setup (round 0) as a self-contained "game"
   end
 
-  gameElapsed = elapsed - self.setupD
+  local gameElapsed = elapsed - self.setupD
 
   local rounds = math.floor(gameElapsed / self.roundD)
   if rounds >= self.rounds
