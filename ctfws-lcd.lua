@@ -60,10 +60,9 @@ local function drawSteadyTopLine(self,rix,maxt,ela)
   local ctfws = self.ctfws
   if self.dl_elapsed == nil then
     lcd:put(lcd:locate(0,0), "                    ")
-    if     rix == 0            then lcd:put(lcd:locate(0,0), "SETUP     :")
-    elseif rix == ctfws.rounds then lcd:put(lcd:locate(0,0), "GAME      :")
-    elseif ctfws.rounds >= 11  then lcd:put(lcd:locate(0,0), string.format("JB# %2d/%2d :",rix,ctfws.rounds-1))
-    else                            lcd:put(lcd:locate(0,0), string.format("JB#   %d/%d :",rix,ctfws.rounds-1))
+    if rix == 0
+      then lcd:put(lcd:locate(0,0), "SETUP     :")
+      else lcd:put(lcd:locate(0,0), "GAME      :")
     end
   end
   drawDS(lcd,0,13,maxt,self.dl_elapsed,ela); self.dl_elapsed = ela
@@ -76,7 +75,10 @@ local function drawSteadyBotLine(self,rix,maxt,rem)
     if rix == 0 then
       lcd:put(lcd:locate(3,0), "START IN  :")
     elseif rix < ctfws.rounds then
-      lcd:put(lcd:locate(3,0), "JAILBREAK :")
+      if ctfws.rounds >= 11
+        then lcd:put(lcd:locate(3,0), string.format("JB# %2d/%2d :",rix,ctfws.rounds-1))
+        else lcd:put(lcd:locate(3,0), string.format("JB#   %d/%d :",rix,ctfws.rounds-1))
+      end
     else
       lcd:put(lcd:locate(3,0), "GAME END  :")
     end
@@ -113,9 +115,9 @@ end
 -- the next message or event
 local function drawTimes(self)
   local ctfws = self.ctfws
-  local rix, maxt, ela = ctfws:times(rtctime.get)
+  local rix, roundD, roundEla, gameEla = ctfws:times(rtctime.get)
   if rix == nil then
-    drawNoGame(self.lcd, maxt)
+    drawNoGame(self.lcd, roundD)
     if rix ~= self.dl_round then
       self.dl_round = rix
       attention(self,true)
@@ -128,8 +130,8 @@ local function drawTimes(self)
     self.dl_elapsed = nil -- force redraws of times on round boundaries
     self.dl_remain  = nil
   end
-  drawSteadyTopLine(self,rix,maxt,ela)
-  drawSteadyBotLine(self,rix,maxt,maxt-ela)
+  drawSteadyTopLine(self,rix,roundD,gameEla)
+  drawSteadyBotLine(self,rix,roundD,roundD-roundEla)
   return true
 end
 
