@@ -21,10 +21,13 @@ local function times(self, nowf)
     return nil, "GAME NOT CONFIGURED!"
   end
 
-  -- Game declared over; show total elapsed time
+  -- Game declared over; show total elapsed time in game (excluding setup)
   if self.endT and self.endT >= self.startT then
-    local t = self.endT - self.startT
-    return nil, string.format("GAME OVER @ %02d:%02d", t/60, t%60)
+    local t = (self.endT - self.startT) - (self.setupD / 10)
+    if t < 0
+      then return nil, "GAME OVER"
+      else return nil, string.format("GAME OVER @ %02d:%02d", t/60, t%60)
+    end
   end
 
   local now_sec, now_usec = nowf()
