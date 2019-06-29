@@ -21,11 +21,16 @@ local function drawDS(lcd, row, col, max, last, decisec)
   --     decisec/3600, decisec/600, (decisec/10)%60, decisec%10))
   -- else
   if drawDScond(max, last, decisec, 600) then -- minutes, seconds, and deci
-     lcd:put(lcd:locate(row,col), string.format("%02d:%02d.%d", decisec/600, (decisec/10)%60, decisec%10))
+      if decisec >= 60000 then
+       -- for incredibly long times, just space pad and hope for the best
+       lcd:put(lcd:locate(row,col), string.format("% 4d:%02d.%d", decisec/600, (decisec/10)%60, decisec%10))
+     else
+       lcd:put(lcd:locate(row,col), string.format("  %02d:%02d.%d", decisec/600, (decisec/10)%60, decisec%10))
+     end
   elseif drawDScond(max, last, decisec, 10) then -- seconds and deci
-     lcd:put(lcd:locate(row,col+3), string.format("%02d.%d", (decisec/10)%60, decisec%10))
+     lcd:put(lcd:locate(row,col+5), string.format("%02d.%d", (decisec/10)%60, decisec%10))
   else -- just deci
-     lcd:put(lcd:locate(row,col+6), string.format("%d",decisec%10))
+     lcd:put(lcd:locate(row,col+8), string.format("%d",decisec%10))
   end
 end
 
@@ -80,7 +85,7 @@ local function drawSteadyTopLine(self,rix,maxt,ela)
       else lcd:put(lcd:locate(0,0), "GAME      :")
     end
   end
-  drawDS(lcd,0,13,maxt,self.dl_elapsed,ela); self.dl_elapsed = ela
+  drawDS(lcd,0,11,maxt,self.dl_elapsed,ela); self.dl_elapsed = ela
 end
 
 local function drawSteadyBotLine(self,rix,maxt,rem)
@@ -99,7 +104,7 @@ local function drawSteadyBotLine(self,rix,maxt,rem)
       lcd:put(lcd:locate(3,0), "GAME END  :")
     end
   end
-  drawDS(lcd,3,13,maxt,self.dl_remain ,rem); self.dl_remain  = rem
+  drawDS(lcd,3,11,maxt,self.dl_remain ,rem); self.dl_remain  = rem
 end
 
 local function attention(self,long)

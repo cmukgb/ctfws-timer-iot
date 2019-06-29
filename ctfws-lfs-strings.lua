@@ -21,7 +21,7 @@ local lcdpreload =
   "define_char",
   "lcd", "mtmr", "ftmr", "fatmr", "dl_elapsed", "dl_elapsed", "dl_remain", "dl_round",
   "attnState", "reset", "drawTimes", "drawFlags", "drawMessage", "drawFlagsMessage",
-  "%02d:%02d.%d", "%02d.%d", "%d", "%-20s",
+  "% 4d:%02d.%d", "  %02d:%02d.%d", "%02d.%d", "%d", "%-20s",
   "%d\000: %s=%s %s=%s", "%d\000: %s=%s%s",
   " CMUKGB CTFWS TIMER ", "                    ",
   "GAME      :",
