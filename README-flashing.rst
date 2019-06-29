@@ -1,9 +1,51 @@
 Prepare the Firmware
 ####################
 
-Not yet really documented; build a NodeMCU firmware with the modules listed in
-``README.rst``.  Ensure that ``./firm`` points to your firmware build directory,
-as we're going to pull ``luac.cross`` and the firmware ``.bin`` therefrom.
+Not yet really documented; build a NodeMCU firmware with the modules listed
+below.  Ensure that ``./firm`` points to your firmware build directory, as
+we're going to pull ``luac.cross`` and the firmware ``.bin`` therefrom.
+
+You'll want to run the following to build the CtFwS-specific LFS image for
+NodeMCU::
+
+  LUACROSS=$(readlink -f ./firm/luac.cross.int) ./mklfs.sh
+
+NodeMCU modules used
+====================
+
+Please ensure that your build of NodeMCU supports LFS and the following
+modules:
+
+* ``bit`` (for LCD)
+* ``cron``
+* ``file``
+* ``i2c`` (for LCD)
+* ``mqtt``
+* ``net``
+* ``node``
+* ``rtctime``
+* ``sjson``
+* ``sntp``
+* ``tmr``
+* ``wifi``
+
+Additionally,
+
+* If you are developing on this software, the ``mDNS`` module may be a good
+  idea, too; the emergency telnet server can be reached with a more friendly
+  name.
+
+* This has only been tested with integer builds.
+
+Configuration Files
+###################
+
+* ``nwfnet.conf`` has details of how to get connectivity to the network.
+* ``nwfnet.conf2`` sets the SNTP server to use
+* ``nwfmqtt.conf`` sets the MQTT server and credentials; it is derived from
+  ``nwfmqtt.conf.in`` via ``rewrites.sed`` in the configuration directories;
+  note that the latter of which is deliberately not checked in.
+* ``ctfws-misc.conf`` can be used to assign the LCD I2C address
 
 Flashing
 ########
