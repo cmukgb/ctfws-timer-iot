@@ -2,11 +2,22 @@
 
 set -e -u
 
+[ -d firm ] || {
+	echo "./firm should be a symbolic link to the nodemcu firmware"
+	exit 1
+}
+
+[ -d core ] || {
+	echo "./core should be a checkout of nwf's core modules"
+	exit 1
+}
+
 SOURCES=(
   ctfws-lfs-strings.lua
   core/_external/lcd1602.lua
-  core/fifo/fifo.lua
-  core/net/{fifosock,nwfmqtt,nwfnet*}.lua
+  firm/lua_modules/fifo/fifo.lua
+  firm/lua_modules/fifo/fifosock.lua
+  core/net/{nwfmqtt,nwfnet*}.lua
   core/telnetd/telnetd{,-{diag,file}}.lua
   core/util/compileall.lua
   core/util/diag.lua
@@ -32,4 +43,4 @@ if ! [ -x "${LUACROSS}" ]; then
 fi
 
 (cd _lfs_build; $LUACROSS -f *.lua)
-ls -l _lfs_build/luac.out
+# ls -l _lfs_build/luac.out
