@@ -50,7 +50,7 @@ local function scroller(t, lix, msg)
 end
 
 -- call back `cb` cycling through elements of table `ta` using
--- timer `tm` every linger `ms`.
+-- timer `tm` every `linger` ms.
 local function alternator(tm, linger, ta, cb)
   local lcd = self.lcd
   local n = #ta
@@ -85,6 +85,7 @@ end
 
 local function drawSteadyBotLine(self,rix,maxt,rem)
   local lcd = self.lcd
+  local ctfws = self.ctfws
   if self.dl_remain == nil then
     lcd:put(lcd:locate(3,0), "                    ")
     if rix == 0 then
@@ -151,15 +152,21 @@ local function drawTimes(self)
 end
 
 local function drawFlags(self)
+  local ctfws = self.ctfws
   if ctfws.flagsN then -- try not to blank a flagsmessage unless we have reason
     self.ftmr:unregister()
     self.fatmr:unregister()
     lcd:put(lcd:locate(1,0),"                    ")
   end
   if ctfws.startT then
-    local oneline = string.format("%d\000: R=%s Y=%s",
+    local rc, yc = "r", "y"
+    (({ ['r'] = function() rc = 'R' end,
+        ['y'] = function() yc = 'Y' end
+    })[ctfws:myTeam()] or function() end)()
+    local oneline = string.format("%d\000: %s=%s %s=%s",
                       ctfws.flagsN,
-                      tostring(ctfws.flagsR), tostring(ctfws.flagsY))
+                      rc, tostring(ctfws.flagsR),
+                      yc, tostring(ctfws.flagsY))
     if #oneline <= 20 then
       lcd:put(lcd:locate(1,(20-#oneline)/2),oneline)
     else
@@ -168,8 +175,8 @@ local function drawFlags(self)
       local maxl = math.max(#fr, #fy)
       if maxl + #tostring(ctfws.flagsN) + 5 <= 20 then
         alternator(self.fatmr, 2000,
-          { string.format("%d\000: R=%s%s", ctfws.flagsN, string.rep(" ", maxl-#fr), fr)
-          , string.format("%d\000: Y=%s%s", ctfws.flagsN, string.rep(" ", maxl-#fy), fy)
+          { string.format("%d\000: %s=%s%s", ctfws.flagsN, rc, string.rep(" ", maxl-#fr), fr)
+          , string.format("%d\000: %s=%s%s", ctfws.flagsN, yc, string.rep(" ", maxl-#fy), fy)
           },
           function(msg) lcd:put(lcd:locate(1,(20-#msg)/2),msg) end)
        else

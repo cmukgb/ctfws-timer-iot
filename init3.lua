@@ -25,6 +25,7 @@ mqc, mqttUser = OVL.nwfmqtt().mkclient("nwfmqtt.conf")
 if mqc == nil then
   print("CTFWS", "You forgot your MQTT configuration file")
 end
+local mqttLocnTopic  = string.format("ctfws/devc/%s/location",mqttUser)
 local mqttBootTopic  = string.format("ctfws/dev/%s/beat",mqttUser)
 mqc:lwt(mqttBootTopic,"dead",1,1)
 
@@ -84,12 +85,20 @@ nwfnet.onmqtt["init"] = function(c,t,m)
     if not m or m == "none"
      then ctfws:deconfig()
           ctfws_lcd_draw_all()
-     else local st, sd, nr, rd, nf = m:match("^%s*(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+).*$")
+     else local st,     -- start time
+	        sd,     -- setup duration
+		nr,     -- number of rounds
+		rd,     -- round duration
+		nf,     -- number of flags
+		gn,     -- game number
+		tc      -- territory configuration string
+	                --   st      sd      nr      rd      nf      gn      tc
+	     = m:match("^%s*(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%S+).*$")
           if st == nil
            then ctfws:deconfig()
            else -- the game's afoot!
                 ctfws:config(tonumber(st), tonumber(sd), tonumber(nr),
-                             tonumber(rd), tonumber(nf))
+                             tonumber(rd), tonumber(nf), tc)
                 ctfws_start_tmr()
           end
           ctfws_lcd_draw_all()
@@ -112,6 +121,9 @@ nwfnet.onmqtt["init"] = function(c,t,m)
    --   if m:match("^%s*(%d+)%s+%?.*$") then ... end
    -- but for now, let's just take any ill-formed message
    if ctfws:setFlags("?","?") then ctfws_lcd:drawFlags() end
+  elseif t == mqttLocnTopic then
+   ctfws:setTerritory(m)
+   ctfws_lcd:drawFlags()
   elseif t:match("^ctfws/game/message") then
     boot_message_hack = nil
     local mt, ms = m:match("^%s*(%d+)%s*(.*)$")
@@ -146,6 +158,7 @@ nwfnet.onnet["init"] = function(e,c)
       ["ctfws/game/config"] = 2,
       ["ctfws/game/endtime"] = 2,
       ["ctfws/game/flags"] = 2,
+      [mqttLocnTopic] = 2,             -- my location
       ["ctfws/game/message"] = 2,      -- broadcast messages
       ["ctfws/game/message/jail"] = 2, -- jail-specific messages
     })

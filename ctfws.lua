@@ -5,6 +5,8 @@
 --   rounds* -- number of rounds of game play
 --   startT* -- POSIX seconds of game start
 --   endT    -- POSIX seconds of game end (if set)
+--   tercfg  -- The territory config string
+--   ter     -- My territory
 --
 --   flagsN* -- total flags
 --   flagsR* -- flags captured by the red team
@@ -13,10 +15,12 @@
 -- *'d fields are publicly read; startT ~= nil is used as a proxy for "is
 -- game configured"
 
+local v = {}
+
 -- returns round index, this round duration, elapsed time
 -- round index: 0 for setup, 1-N for game play, and nil for game over / no game
 -- all return times in deciseconds
-local function times(self, nowf)
+function v:times(nowf)
   if self.startT == nil then
     return nil, "GAME NOT CONFIGURED!"
   end
@@ -53,15 +57,16 @@ local function times(self, nowf)
   end
 end
 
-local function config(self, st, sd, nr, rd, nf)
+function v:config(st, sd, nr, rd, nf, tc)
   self.startT = st
   self.setupD = sd * 10
   self.rounds = nr
   self.roundD = rd * 10
   self.flagsN = nf
+  self.tercfg = tc
 end
 
-local function deconfig(self)
+function v:deconfig()
   self.startT = nil
   self.rounds = nil
   -- leave flagsN alone for end-of-game display logic
@@ -69,21 +74,25 @@ end
 
 -- return whether or not a change took place, for duplicate message
 -- suppression
-local function setFlags(self, fr, fy)
+function v:setFlags(fr, fy)
   if (self.flagsR == fr) and (self.flagsY == fy) then return false end
   self.flagsR = fr
   self.flagsY = fy
   return true
 end
 
-local function setEndTime(self,t)
+function v:setEndTime(t)
   self.endT = t
 end
 
-local self = {}
-self.times = times
-self.config = config
-self.deconfig = deconfig
-self.setFlags = setFlags
-self.setEndTime = setEndTime
-return self
+function v:setTerritory(t)
+  self.ter = t
+end
+
+function v:myTeam()
+  if self.ter    == nil then return nil end
+  if self.tercfg == nil then return nil end
+  return ({ 'r', 'y' })[self.tercfg:find(self.ter)]
+end
+
+return v
