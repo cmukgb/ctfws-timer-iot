@@ -1,6 +1,6 @@
 -- logging for debugging
--- dprint = function(...) end -- OFF
-dprint = function(...) print(...) end -- ON
+-- local dprint = function(...) end -- OFF
+local dprint = function(...) print(...) end -- ON
 
 -- common module initialization
 cron.schedule("*/5 * * * *", function(e) OVL["nwfnet-sntp"]().dosntp(nil) end)

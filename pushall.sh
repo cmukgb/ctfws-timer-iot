@@ -7,7 +7,7 @@ set -e -u
 pushsrc() {
   dopushlua     ctfws.lua
   dopushlua     ctfws-lcd.lua
-  dopushlua     init3.lua
+  dopushlua     main.lua
   dopushcompile init2.lua
 }
 

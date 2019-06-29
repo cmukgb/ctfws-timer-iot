@@ -37,4 +37,4 @@ i2c.setup(0,2,1,i2c.SLOW)  -- init i2c on GPIO4 and GPIO5
 lcd = OVL.lcd1602()(ctfwshw.lcd or 0x27)
 
 -- give the LCD time to initialize properly
-tmr.create():alarm(125, tmr.ALARM_SINGLE, function() print("INIT2", "go3") OVL.init3() end)
+tmr.create():alarm(125, tmr.ALARM_SINGLE, function() print("INIT2", "go3") OVL.main() end)

@@ -32,7 +32,7 @@ local lcdpreload =
   "JB# %2d/%2d :",
   "R", "Y"
 
-local init3load =
+local mainload =
   "flg_tmr", "lastMsgTime", "mqttUser", "msg_tmr", "fla_tmr",
   "dprint", "mqc", "publish",
   "nwfmqtt.conf",
