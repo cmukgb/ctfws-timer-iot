@@ -45,12 +45,10 @@ local function mqtt_reconn()
   OVL.nwfmqtt().connect(mqc,"nwfmqtt.conf")
 end
 
-local mqtt_beat_cronentry
-local function mqtt_beat()
-  mqtt_beat_cronentry = cron.schedule("* * * * *", function(e)
+local mqtt_beat_tmr = tmr.create()
+mqtt_beat_tmr:register(20000, tmr.ALARM_AUTO, function(t)
     mqc:publish(mqttBootTopic,string.format("beat %d %s",rtctime.get(),myBSSID),1,1)
   end)
-end
 
 local function ctfws_lcd_draw_all()
     ctfws_lcd:reset()
@@ -137,12 +135,12 @@ end
 nwfnet.onnet["init"] = function(e,c)
   dprint("NET", e)
   if     e == "mqttdscn" and c == mqc then
-    if mqtt_beat_cronentry then mqtt_beat_cronentry:unschedule() mqtt_beat_cronentry = nil end
+    mqtt_beat_tmr:stop()
     if not mqtt_reconn_cronentry then mqtt_reconn() end
     ctfws_lcd:drawFlagsMessage("MQTT Disconnected")
   elseif e == "mqttconn" and c == mqc then
     if mqtt_reconn_cronentry then mqtt_reconn_cronentry:unschedule() mqtt_reconn_cronentry = nil end
-    if not mqtt_beat_cronentry then mqtt_beat() end
+    mqtt_beat_tmr:start()
     mqc:publish(mqttBootTopic,"alive",1,1)
     mqc:subscribe({
       ["ctfws/game/config"] = 2,
