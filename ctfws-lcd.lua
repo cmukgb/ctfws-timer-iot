@@ -172,11 +172,12 @@ local function drawFlags(self)
     else
       local fr = tostring(ctfws.flagsR)
       local fy = tostring(ctfws.flagsY)
+      local fn = tostring(ctfws.flagsN)
       local maxl = math.max(#fr, #fy)
-      if maxl + #tostring(ctfws.flagsN) + 5 <= 20 then
+      if maxl + #fn + 5 <= 20 then
         alternator(self.fatmr, 2000,
-          { string.format("%d\000: %s=%s%s", ctfws.flagsN, rc, string.rep(" ", maxl-#fr), fr)
-          , string.format("%d\000: %s=%s%s", ctfws.flagsN, yc, string.rep(" ", maxl-#fy), fy)
+          { string.format("%d\000: %s=%s%s", fn, rc, string.rep(" ", maxl-#fr), fr)
+          , string.format("%d\000: %s=%s%s", fn, yc, string.rep(" ", maxl-#fy), fy)
           },
           function(msg) lcd:put(lcd:locate(1,(20-#msg)/2),msg) end)
        else
