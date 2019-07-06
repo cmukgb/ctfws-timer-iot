@@ -29,12 +29,28 @@ if file.open("ctfws-misc.conf","r") then
   end
 end
 
+-- While we're getting configuration, go ahead and build our MQTT client
+-- and set the global holding our name
+mqc, mqttUser = OVL.nwfmqtt().mkclient("nwfmqtt.conf")
+if mqc == nil then
+  print("INIT2", "You forgot your MQTT configuration file")
+end
+
+-- Game logic modules
+ctfws = OVL.ctfws()
+ctfws:setFlags(0,0)
+
 -- Hardware initialization
 print("INIT2", "hw")
 wifi.sta.sleeptype(wifi.NONE_SLEEP) -- don't power down radio
 gpio.mode(5,gpio.OUTPUT)   -- beeper on GPIO14
 i2c.setup(0,2,1,i2c.SLOW)  -- init i2c on GPIO4 and GPIO5
-lcd = OVL.lcd1602()(ctfwshw.lcd or 0x27)
+
+if ctfwshw.lcd then
+  print("LCD ADDR", ctfwshw.lcd)
+  lcd = OVL.lcd1602()(ctfwshw.lcd)
+  ctfws_lcd = OVL["ui-lcd-ctrl"]()(require "nwfnet", ctfws, lcd, mqc)
+end
 
 -- give the LCD time to initialize properly
-tmr.create():alarm(125, tmr.ALARM_SINGLE, function() print("INIT2", "go3") OVL.main() end)
+tmr.create():alarm(125, tmr.ALARM_SINGLE, function() print("INIT2", "main") OVL.main() end)

@@ -6,7 +6,8 @@ set -e -u
 
 pushsrc() {
   dopushlua     ctfws.lua
-  dopushlua     ctfws-lcd.lua
+  dopushlua     ui-lcd-view.lua
+  dopushlua     ui-lcd-ctrl.lua
   dopushlua     main.lua
   dopushcompile init2.lua
 }

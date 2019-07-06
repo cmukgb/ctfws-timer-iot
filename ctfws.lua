@@ -14,8 +14,15 @@
 --
 -- *'d fields are publicly read; startT ~= nil is used as a proxy for "is
 -- game configured"
+--
+-- Setters run callback chains; subscribe by adding a non-array entry to
+-- the `cbs` field.
+
+local function runcbs(st,ev,...) for _,v in pairs(st.cbs) do v(ev,st,...) end end
 
 local v = {}
+
+--====== Getters
 
 -- returns round index, this round duration, elapsed time
 -- round index: 0 for setup, 1-N for game play, and nil for game over / no game
@@ -57,6 +64,20 @@ function v:times(nowf)
   end
 end
 
+function v:myTeam()
+  if self.ter    == nil then return nil end
+  if self.tercfg == nil then return nil end
+  return ({ 'r', 'y' })[self.tercfg:find(self.ter)]
+end
+
+--===== Setters
+
+v.cbs = {}
+
+function v:reconfig()
+  return runcbs(self,"reconfig")
+end
+
 function v:config(st, sd, nr, rd, nf, tc)
   self.startT = st
   self.setupD = sd * 10
@@ -64,35 +85,37 @@ function v:config(st, sd, nr, rd, nf, tc)
   self.roundD = rd * 10
   self.flagsN = nf
   self.tercfg = tc
+
+  return runcbs(self,"config")
 end
 
 function v:deconfig()
   self.startT = nil
   self.rounds = nil
   -- leave flagsN alone for end-of-game display logic
+
+  return runcbs(self,"deconfig")
 end
 
 -- return whether or not a change took place, for duplicate message
 -- suppression
 function v:setFlags(fr, fy)
-  if (self.flagsR == fr) and (self.flagsY == fy) then return false end
+  if (self.flagsR == fr) and (self.flagsY == fy) then return end
   self.flagsR = fr
   self.flagsY = fy
-  return true
+
+  return runcbs(self,"flags")
 end
 
 function v:setEndTime(t)
   self.endT = t
+  return runcbs(self,"endtime")
 end
 
 function v:setTerritory(t)
   self.ter = t
+  return runcbs(self,"territory")
 end
 
-function v:myTeam()
-  if self.ter    == nil then return nil end
-  if self.tercfg == nil then return nil end
-  return ({ 'r', 'y' })[self.tercfg:find(self.ter)]
-end
 
 return v

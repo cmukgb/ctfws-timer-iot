@@ -6,21 +6,25 @@ local modload = "cron", "cron.entry", "schedule", "unschedule",
   "crypto.hash", "ws2812.buffer",
   "max", "rep", "get"
 
-local ctfws = "ctfws", "ctfws_lcd", "ctfws_tmr",
+local ctfws = "ctfws", "ctfws_lcd",
   "setupD", "roundD", "rounds", "startT", "endT", "flagsN", "flagsR", "flagsY",
-    "ter", "tercfg",
-  "times", "config", "deconfig", "setFlags", "setEndTime", "myTeam", "setTerritory",
+    "ter", "tercfg", "cbs",
+  "times", "config", "deconfig", "setFlags", "setEndTime", "myTeam",
+  "setTerritory", "reconfig",
+  "endtime", "flags", "territory",
   "GAME NOT CONFIGURED!",
   "GAME OVER @ %02d:%02d", "GAME OVER",
   "START TIME IN FUTURE",
   "TIME IS UP",
   "CTFWS",
-  "r", "y"
+  "r", "y",
+  "d", "w", "wd", "dw"
 
 local lcdpreload =
   "define_char",
-  "lcd", "mtmr", "ftmr", "fatmr", "dl_elapsed", "dl_elapsed", "dl_remain", "dl_round",
-  "attnState", "reset", "drawTimes", "drawFlags", "drawMessage", "drawFlagsMessage",
+  "lcd", "mtmr", "ftmr", "fatmr", "dl_elapsed", "dl_elapsed", "dl_remain",
+  "dl_round", "attnState", "reset", "drawTimes", "drawFlags", "drawMessage",
+  "drawFlagsMessage", "UI",
   "% 4d:%02d.%d", "  %02d:%02d.%d", "%02d.%d", "%d", "%-20s",
   "%d\000: %s=%s %s=%s", "%d\000: %s=%s%s",
   " CMUKGB CTFWS TIMER ", "                    ",
@@ -33,7 +37,7 @@ local lcdpreload =
   "R", "Y"
 
 local mainload =
-  "flg_tmr", "lastMsgTime", "mqttUser", "msg_tmr", "fla_tmr",
+  "lastMsgTime", "mqttUser", "main",
   "dprint", "mqc", "publish",
   "nwfmqtt.conf",
   "* * * * *",
@@ -48,6 +52,6 @@ local mainload =
   "^%s*(%d+)%s*(.*)$",
   "^%s*%?.*$",
   "^ctfws/game/message",
-  "CONNECTING...", "MQTT", "MQTT CONNECTED", "MQTT Disconnected", "DHCP %s",
+  "MQTT", "MQTT CONNECTED", "MQTT Disconnected", "DHCP %s",
   "WIFI %s", "NET", "Trying reconn...",
   "alive", "beat %d %s"

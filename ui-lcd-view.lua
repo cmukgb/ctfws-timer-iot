@@ -35,8 +35,7 @@ local function drawDS(lcd, row, col, max, last, decisec)
 end
 
 -- scroll a message msg across line lix using the timer t
-local function scroller(t, lix, msg)
-  local lcd = self.lcd
+local function scroller(lcd, t, lix, msg)
   local mlen = #msg
   if mlen <= 20
    then lcd:put(lcd:locate(lix,(20-mlen)/2),msg)
@@ -190,7 +189,7 @@ local function drawFlags(self)
         -- We don't scroll within the alternator above because who knows,
         -- at this point, how long these lines are and maybe they'd
         -- temporarily render blank.
-        scroller(self.ftmr, 1, oneline)
+        scroller(self.lcd, self.ftmr, 1, oneline)
       end
     end
     attention(self,false)
@@ -211,7 +210,7 @@ local function drawMessage(self, msg)
 
   if not msg then return end
 
-  scroller(self.mtmr, 2, msg)
+  scroller(self.lcd, self.mtmr, 2, msg)
   attention(self,false)
 end
 
@@ -222,7 +221,7 @@ local function reset(self)
 end
 
 return function(ctfws, lcd, mt, ft, fa)
-  self = {}
+  local self = {}
   self.ctfws = ctfws
   self.lcd = lcd
   self.mtmr = mt
