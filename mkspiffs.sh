@@ -32,6 +32,7 @@ FWSZ=$(stat --printf="%s" ${FWIMG})
 		echo 'NO MQTT CONFIGURATION KNOWN; THIS IS UNLIKELY TO WORK!'
 	fi
 	for i in conf/${BOARDNAME}/*.conf; do echo import $i `basename $i`; done
+	[ -r conf/${BOARDNAME}/nwfnet.cert ] && echo import conf/${BOARDNAME}/nwfnet.cert nwfnet.cert
 
 	# And all our Lua files
 	for i in *.lua; do echo import $i $i; done
