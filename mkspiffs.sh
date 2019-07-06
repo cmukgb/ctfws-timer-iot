@@ -35,7 +35,7 @@ FWSZ=$(stat --printf="%s" ${FWIMG})
 	[ -r conf/${BOARDNAME}/nwfnet.cert ] && echo import conf/${BOARDNAME}/nwfnet.cert nwfnet.cert
 
 	# And all our Lua files
-	for i in *.lua; do echo import $i $i; done
+	find . -maxdepth 1 -name \*.lua ! -name ctfws-lfs-strings.lua -printf "import %f %f\n"
 
 	# And the LFS image with the rest of everything
 	#  We could, and used to, but we now go via the nodemcu partition tool
