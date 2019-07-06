@@ -30,8 +30,8 @@ local lcdpreload =
   " CMUKGB CTFWS TIMER ", "                    ",
   "GAME", "GAME %d", "SETUP", "SETUP %d",
   "START IN", "GAME END",
-  "JB#   %d/%d :",
-  "JB# %2d/%2d :",
+  "JB# %d/%d",
+  "JB# %2d/%2d",
   "R", "Y", ":"
 
 local mainload =

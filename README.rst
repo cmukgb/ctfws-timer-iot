@@ -32,7 +32,7 @@ Character Display Examples
     GAME 2    :  MM:SS.s
        NN⚑: R=NN y=NN
     messagemessagemessag
-    JB#   n/N :  MM:SS.s
+    JB# n/N   :  MM:SS.s
 
 * Last round display::
 
