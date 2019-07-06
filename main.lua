@@ -71,6 +71,15 @@ end
 
 -- network callbacks
 
+local wifidog_tmr = tmr.create()
+local function install_wifidog()
+  wifidog_tmr:alarm(60000, tmr.ALARM_SINGLE, function()
+    print("No WiFi in 60 seconds; rebooting!")
+    node.restart()
+  end)
+end
+install_wifidog()
+
 nwfnet.onnet["main"] = function(e,c)
   dprint("main", "NET", e)
   if     e == "mqttdscn" and c == mqc then
@@ -88,8 +97,11 @@ nwfnet.onnet["main"] = function(e,c)
     })
   elseif e == "wstagoip"              then
     if not mqtt_reconn_cronentry then mqtt_reconn() end
+  elseif e == "wstadscn"              then
+    install_wifidog()
   elseif e == "wstaconn"              then
     myBSSID = c.BSSID
+    wifidog_tmr:unregister()
   elseif e == "sntpsync"              then
     -- If we have a game configuration and just got SNTP sync, it might
     -- be that we just lept far into the future, so go ahead and start
