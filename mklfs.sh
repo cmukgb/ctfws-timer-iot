@@ -13,7 +13,7 @@ set -e -u
 }
 
 SOURCES=(
-  ctfws-lfs-strings.lua
+  *.lua
   core/_external/lcd1602.lua
   firm/lua_modules/fifo/fifo.lua
   firm/lua_modules/fifo/fifosock.lua

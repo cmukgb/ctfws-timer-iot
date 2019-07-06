@@ -70,7 +70,7 @@ and then ::
 
     ./firm/tools/nodemcu-partition.py \
      --flash_size 4MB \
-     --lfs_size 65536 --lfs_file _lfs_build/luac.out \
+     --lfs_size 131072 --lfs_file _lfs_build/luac.out \
      --spiffs_size 262144 --spiffs_file spiffs-${BOARDNAME}.img
 
 After flashing, the device will reboot, apply some internal changes, and reboot
