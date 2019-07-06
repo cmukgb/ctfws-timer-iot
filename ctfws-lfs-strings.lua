@@ -8,7 +8,7 @@ local modload = "cron", "cron.entry", "schedule", "unschedule",
 
 local ctfws = "ctfws", "ctfws_lcd",
   "setupD", "roundD", "rounds", "startT", "endT", "flagsN", "flagsR", "flagsY",
-    "ter", "tercfg", "cbs",
+    "ter", "tercfg", "gamenr", "cbs",
   "times", "config", "deconfig", "setFlags", "setEndTime", "myTeam",
   "setTerritory", "reconfig",
   "endtime", "flags", "territory",
@@ -28,13 +28,11 @@ local lcdpreload =
   "% 4d:%02d.%d", "  %02d:%02d.%d", "%02d.%d", "%d", "%-20s",
   "%d\000: %s=%s %s=%s", "%d\000: %s=%s%s",
   " CMUKGB CTFWS TIMER ", "                    ",
-  "GAME      :",
-  "SETUP     :",
-  "START IN  :",
-  "GAME END  :",
+  "GAME", "GAME %d", "SETUP", "SETUP %d",
+  "START IN", "GAME END",
   "JB#   %d/%d :",
   "JB# %2d/%2d :",
-  "R", "Y"
+  "R", "Y", ":"
 
 local mainload =
   "lastMsgTime", "mqttUser", "main",

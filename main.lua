@@ -45,7 +45,7 @@ nwfnet.onmqtt["main"] = function(c,t,m)
            then ctfws:deconfig()
            else -- the game's afoot!
                 ctfws:config(tonumber(st), tonumber(sd), tonumber(nr),
-                             tonumber(rd), tonumber(nf), tc)
+                             tonumber(rd), tonumber(nf), tonumber(gn), tc)
           end
     end
   elseif t == "ctfws/game/endtime" then

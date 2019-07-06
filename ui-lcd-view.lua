@@ -74,15 +74,21 @@ local function drawNoGame(lcd, msg)
   lcd:put(lcd:locate(3,(20-#msg)/2), msg)
 end
 
-local function drawSteadyTopLine(self,rix,maxt,ela)
+local function drawSteadyTopLine(self,gn,rix,maxt,ela)
   local lcd = self.lcd
   local ctfws = self.ctfws
   if self.dl_elapsed == nil then
     lcd:put(lcd:locate(0,0), "                    ")
-    if rix == 0
-      then lcd:put(lcd:locate(0,0), "SETUP     :")
-      else lcd:put(lcd:locate(0,0), "GAME      :")
+    local str
+    if gn == nil or gn == 0 then
+        if rix == 0 then str = ("SETUP")
+        else             str = ("GAME")
+        end
+    elseif rix == 0 then str = ("SETUP %d"):format(gn)
+    else                 str = ("GAME %d"):format(gn)
     end
+    lcd:put(lcd:locate(0,0), str)
+    lcd:put(lcd:locate(0,10), ":")
   end
   drawDS(lcd,0,11,maxt,self.dl_elapsed,ela); self.dl_elapsed = ela
 end
@@ -150,7 +156,7 @@ local function drawTimes(self)
     self.dl_elapsed = nil -- force redraws of times on round boundaries
     self.dl_remain  = nil
   end
-  drawSteadyTopLine(self,rix,roundD,gameEla)
+  drawSteadyTopLine(self,ctfws.gamenr,rix,roundD,gameEla)
   drawSteadyBotLine(self,rix,roundD,roundD-roundEla)
   return true
 end

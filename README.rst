@@ -20,7 +20,7 @@ Character Display Examples
 
     0         1         
     01234567890123456789
-    SETUP    :   MM:SS.s
+    SETUP 2  :   MM:SS.s
        NN⚑: R=0 y=0
     messagemessagemessag
     START IN :   MM:SS.s
@@ -29,7 +29,7 @@ Character Display Examples
 
     0         1         
     01234567890123456789
-    GAME      :  MM:SS.s
+    GAME 2    :  MM:SS.s
        NN⚑: R=NN y=NN
     messagemessagemessag
     JB#   n/N :  MM:SS.s
@@ -38,7 +38,7 @@ Character Display Examples
 
     0         1         
     01234567890123456789
-    GAME      :  MM:SS.s
+    GAME 2    :  MM:SS.s
        NN⚑: R=NN y=NN
     messagemessagemessag
     GAME END  :  MM:SS.s

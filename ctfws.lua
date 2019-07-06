@@ -5,6 +5,7 @@
 --   rounds* -- number of rounds of game play
 --   startT* -- POSIX seconds of game start
 --   endT    -- POSIX seconds of game end (if set)
+--   gamenr* -- The game number (if set)
 --   tercfg  -- The territory config string
 --   ter     -- My territory
 --
@@ -78,12 +79,13 @@ function v:reconfig()
   return runcbs(self,"reconfig")
 end
 
-function v:config(st, sd, nr, rd, nf, tc)
+function v:config(st, sd, nr, rd, nf, gn, tc)
   self.startT = st
   self.setupD = sd * 10
   self.rounds = nr
   self.roundD = rd * 10
   self.flagsN = nf
+  self.gamenr = gn
   self.tercfg = tc
 
   return runcbs(self,"config")
