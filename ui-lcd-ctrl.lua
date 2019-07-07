@@ -95,12 +95,16 @@ return function(nwfnet, ctfws, lcd, mqc)
     print("UI", "NET", e)
     if     e == "mqttdscn" and c == mqc then
       ctfws_lcd:drawFlagsMessage("MQTT Disconnected")
+      ctfws_lcd.connected = false
+      ctfws_lcd.dl_elapsed = nil -- force full redraw
     elseif e == "mqttconn" and c == mqc then
       ctfws_lcd:drawFlagsMessage("MQTT CONNECTED")
       mqc:subscribe({
         ["ctfws/game/message"] = 2,      -- broadcast messages
         ["ctfws/game/message/jail"] = 2, -- jail-specific messages (XXX role!)
       })
+      ctfws_lcd.connected = true
+      ctfws_lcd.dl_elapsed = nil -- force full redraw
     elseif e == "wstagoip"              then
       ctfws_lcd:drawFlagsMessage(string.format("DHCP %s",c.IP))
     elseif e == "wstaconn"              then

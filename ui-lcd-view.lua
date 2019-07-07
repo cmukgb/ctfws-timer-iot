@@ -88,7 +88,7 @@ local function drawSteadyTopLine(self,gn,rix,maxt,ela)
     else                 str = ("GAME %d"):format(gn)
     end
     lcd:put(lcd:locate(0,0), str)
-    lcd:put(lcd:locate(0,10), ":")
+    lcd:put(lcd:locate(0,10), (self.connected and ":") or "?")
   end
   drawDS(lcd,0,11,maxt,self.dl_elapsed,ela); self.dl_elapsed = ela
 end
