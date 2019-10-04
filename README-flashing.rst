@@ -40,8 +40,8 @@ Additionally,
 Configuration Files
 ###################
 
-* ``nwfnet.conf`` has details of how to get connectivity to the network.
-* ``nwfnet.conf2`` sets the SNTP server to use
+* ``nwfnet.conf`` has details of how to get connectivity to the network and
+  the SNTP server.
 * ``nwfmqtt.conf`` sets the MQTT server and credentials; it is derived from
   ``nwfmqtt.conf.in`` via ``rewrites.sed`` in the configuration directories;
   note that the latter of which is deliberately not checked in.
