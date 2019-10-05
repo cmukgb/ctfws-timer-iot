@@ -56,7 +56,6 @@ end
 -- call back `cb` cycling through elements of table `ta` using
 -- timer `tm` every `linger` ms.
 local function alternator(tm, linger, ta, cb)
-  local lcd = self.lcd
   local n = #ta
   local ix = 1
   local function donext()
@@ -84,7 +83,7 @@ local function drawSteadyTopLine(self,gn,rix,maxt,ela)
         if rix == 0 then str = ("SETUP")
         else             str = ("GAME")
         end
-    elseif rix == 0 then str = ("SETUP %d"):format(gn)
+    elseif rix == 0 then str = ("SETUP G%d"):format(gn)
     else                 str = ("GAME %d"):format(gn)
     end
     lcd:put(lcd:locate(0,0), str)

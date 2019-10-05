@@ -1,7 +1,7 @@
 {
   "broker": "kgb.club.cc.cmu.edu",
   "port": 1883,
-  "secure" : 0,
+  "secure" : false,
   "clean": 1,
   "keepalive": 100,
   "user": "@@MQTT_USER@@",

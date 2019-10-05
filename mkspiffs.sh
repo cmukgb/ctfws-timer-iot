@@ -26,7 +26,7 @@ FWSZ=$(stat --printf="%s" ${FWIMG})
 	if [ -r conf/${BOARDNAME}/rewrites.sed ]; then
 		for i in conf/_common/*.conf.in; do
 			sed -f conf/${BOARDNAME}/rewrites.sed < $i \
-				> `dirname $i`/`basename $i .in`
+				> conf/${BOARDNAME}/`basename $i .in`
 		done
 	elif [ ! -r conf/${BOARDNAME}/nwfmqtt.conf ]; then
 		echo 'NO MQTT CONFIGURATION KNOWN; THIS IS UNLIKELY TO WORK!'

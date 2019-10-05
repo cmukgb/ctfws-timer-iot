@@ -19,6 +19,7 @@ modules:
 * ``bit`` (for LCD)
 * ``cron``
 * ``file``
+* ``gpio``
 * ``i2c`` (for LCD)
 * ``mqtt``
 * ``net``

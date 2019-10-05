@@ -14,6 +14,10 @@ if file.exists("luac.out") then
   error("INIT2", "Failed to update LFS!")
 end
 
+-- Kick the GC over to a less hyperactive mode of operation;
+-- limit the Lua heap to 24KiB so as to leave room for TLS.
+node.egc.setmode(node.egc.ON_MEM_LIMIT, 24576)
+
 -- It's early in boot, so we have plenty of RAM.  Compile
 -- the rest of the firmware from source if it's there.
 OVL.compileall()
@@ -44,6 +48,7 @@ ctfws:setFlags(0,0)
 print("INIT2", "hw")
 wifi.sta.sleeptype(wifi.NONE_SLEEP) -- don't power down radio
 gpio.mode(5,gpio.OUTPUT)   -- beeper on GPIO14
+gpio.write(5,gpio.HIGH)
 i2c.setup(0,2,1,i2c.SLOW)  -- init i2c on GPIO4 and GPIO5
 
 if ctfwshw.lcd then
